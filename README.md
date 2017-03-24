@@ -16,4 +16,3 @@
 * `python-urwid`
 * `python-dateutil`
 * `python-pickle`
-* WebKit, WebKit-GTK (e.g., `gir1.2-webkit-3.0` under Debian)
