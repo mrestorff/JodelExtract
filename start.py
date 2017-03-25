@@ -10,7 +10,6 @@ import sys
 import enum
 import appdirs
 import time
-#from PIL import Image
 import TOOLS.Connection
 import TOOLS.PostHandler
 import requests
@@ -26,9 +25,6 @@ def timesort(post):
     """Returns post's post ID as an int for sorting"""
     return int(post['post_id'], 16)
 
-menu_entry_titles={TOOLS.Connection.PostType.POPULAR: 'Popular',
-                   TOOLS.Connection.PostType.DISCUSSED: 'Discussed',
-                   TOOLS.Connection.PostType.COMBO:'Combo'}
 
 class JodelExtract():
     """ The main window class """
@@ -43,16 +39,7 @@ class JodelExtract():
             print "Cannot create tempdir: "+str(e)
             return False
 
-        # dictionary of dynamically generated notebook pages
-        #self.notebook_pages_dict = {}
-        # map post_category <=> page container widget
-        #self.page_container_widget_dict = {}
-        # dictionary for tuples of function and parameter list to refresh each tab
-        #self.reload_function_dict = {}
-        # map post_category_type <=> tab number
-        #self.tab_num_dict = {}
         self.posts_mode_dict = {}
-        #self.my_posts_notebook_page = None
 
         #for post_category in post_category_type:
         #    self.posts_mode_dict[post_category] = TOOLS.Connection.PostType.COMBO
@@ -60,6 +47,12 @@ class JodelExtract():
         # POST MODE SETTINGS
         self.my_posts_mode = TOOLS.Connection.PostType.COMBO
         self.posts_mode = TOOLS.Connection.PostType.COMBO
+
+        #self.reload
+        #self.new_post
+        #self.new_channel
+        #self.change_location
+        #self.view_karma
 
     def clean_tempdir(self,max_age=7*86400):
         try:
@@ -74,9 +67,9 @@ class JodelExtract():
         except Exception as e:
             print "Could not clean temp dir: "+str(e)
 
-    def initialize(self, citycc=None, location=None, initial_channels=None):
+    def initialize(self, citycc=None, location=None, initial_channels=None, mode=None):
         """Set up the connection to Jodel
-           citycc  A location in City, CC format as in "Hamburg, DE"
+           citycc  A location in City, CC format as in "Vienna, AT"
            """
 
         # make a new connection object
@@ -93,6 +86,9 @@ class JodelExtract():
         #    else:
         #        initial_channels = []
 
+        if mode is not None:
+            self.posts_mode = mode
+
         self.posts(mode=self.posts_mode) # => calls posts further down the code
         #self.my_posts()
         #self.my_replies()
@@ -102,7 +98,7 @@ class JodelExtract():
         #   self._open_channel(self,initial_channel)
         return False
 
-    def reload(self, widget, data):        
+    def reload(self, widget, data):
         reload_function = self.reload_function_dict[self.notebook.get_current_page()]
 
         if reload_function is not None:
@@ -110,16 +106,8 @@ class JodelExtract():
         self.clean_tempdir()
 
     def view_karma(self, widget, data):
-        """ This method opens a dialog which shows the user's current karma.
-        """
         reply = self.connection.karma()
 
-        if self.debugDialog is not None:
-            self.debugDialog.update('=== Karma ===\n' + pprint.pformat(reply) + '\n')
-        if reply is not None:
-            dialog = Gtk.MessageDialog(self,Gtk.DialogFlags.DESTROY_WITH_PARENT,Gtk.MessageType.INFO,Gtk.ButtonsType.CLOSE,'Karma: ' + str(reply['karma']))
-            dialog.run()
-            dialog.destroy()
 
 
 # ----------------------------------------------------------------------
@@ -146,26 +134,16 @@ class JodelExtract():
                 post_data_dict = {'posts': sorted(raw_post_data_dict['replied'] +
                         raw_post_data_dict['voted'] +
                         raw_post_data_dict['recent'],key=timesort,reverse=True)}
+            elif mode == TOOLS.Connection.PostType.ALL:
+                post_data_dict = self.connection.recent_posts()
             else:
-                post_data_dict = self.connection.get_combo()
+                post_data_dict = self.connection.recent_posts()
 
         if post_data_dict is False:
             print "Error! Could not fetch post data."
 
         self.post_data_dict = post_data_dict
 
-        #if self.debugDialog is not None:
-        #    self.debugDialog.update('=== Posts ===\n' + pprint.pformat(post_data_dict) + '\n')
-
-        # get page widget
-        #page_container_widget, tab_number = self._new_tab_container((self.posts,[None]),
-                                                                    #post_category=post_category_type.POSTS,
-                                                                    #menu_entries=[TOOLS.Connection.PostType.COMBO,
-                                                                    #              TOOLS.Connection.PostType.POPULAR,
-                                                                    #              TOOLS.Connection.PostType.DISCUSSED])
-
-
-        #notebook_page = self._get_clear_notebook_page_grid(page_container_widget)
         #print "Post count: " + len(post_data_dict['posts'])
         if post_data_dict:
             debug = False
@@ -200,7 +178,7 @@ if __name__ == '__main__':
 
     print TOOLS.Config.SPLASH_TEXT
 
-    loc = raw_input("Please specify the location (format: City, CC): ")
+    loc = raw_input("Please specify the location (format: City, CC) >> ")
 
     if loc is not '':
         print "Location specified as " + loc
@@ -208,5 +186,23 @@ if __name__ == '__main__':
         loc = "Hamburg, DE"
         print "Using default location " + loc
 
+    print """
+    MODE SELECTION:
+        1. Recent posts
+        2. Most popular
+        3. Most discussed
+        4. Combination of 1-3
+        """
+    modes = [TOOLS.Connection.PostType.ALL,
+             TOOLS.Connection.PostType.POPULAR,
+             TOOLS.Connection.PostType.DISCUSSED,
+             TOOLS.Connection.PostType.COMBO]
+    i = int(raw_input("What mode do you want to use? >> "))-1
+    print "\n#############################################################\n"
+    if i <= 3:
+        mode = modes[i]
+    else:
+        mode = None
+
     win = JodelExtract()
-    win.initialize(citycc=loc)
+    win.initialize(citycc=loc, mode=mode)
