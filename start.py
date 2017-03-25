@@ -26,21 +26,6 @@ def timesort(post):
     """Returns post's post ID as an int for sorting"""
     return int(post['post_id'], 16)
 
-#class post_category_type(enum.Enum):
-#    """Enumerate the types of page container widgets """
-#    MY_POSTS     = 1
-#    VOTED_POSTS  = 3
-#    MY_REPLIES   = 5
-#    POSTS        = 7
-#    CHANNEL      = 9
-#    PINNED_POSTS = 11
-
-#post_category_titles = {post_category_type.MY_POSTS:     'My Posts',
-#                        post_category_type.VOTED_POSTS:  'My Voted Posts',
-#                        post_category_type.PINNED_POSTS: 'My Pinned Posts',
-#                        post_category_type.MY_REPLIES:   'My Replies',
-#                        post_category_type.POSTS:        'Posts'}
-
 menu_entry_titles={TOOLS.Connection.PostType.POPULAR: 'Popular',
                    TOOLS.Connection.PostType.DISCUSSED: 'Discussed',
                    TOOLS.Connection.PostType.COMBO:'Combo'}
@@ -76,12 +61,6 @@ class JodelExtract():
         self.my_posts_mode = TOOLS.Connection.PostType.COMBO
         self.posts_mode = TOOLS.Connection.PostType.COMBO
 
-        #self.reload
-        #self.new_post
-        #self.new_channel
-        #self.change_location
-        #self.view_karma
-
     def clean_tempdir(self,max_age=7*86400):
         try:
             files_in_temp = os.listdir(self.tempdir)
@@ -96,9 +75,8 @@ class JodelExtract():
             print "Could not clean temp dir: "+str(e)
 
     def initialize(self, citycc=None, location=None, initial_channels=None):
-        """Set up the connection to Jodel, load the content of the
-           default tabs
-           citycc  A location in City, CC format as in "Vienna, AT"
+        """Set up the connection to Jodel
+           citycc  A location in City, CC format as in "Hamburg, DE"
            """
 
         # make a new connection object
@@ -124,12 +102,7 @@ class JodelExtract():
         #   self._open_channel(self,initial_channel)
         return False
 
-    def reload(self, widget, data):
-        """Reloads the data in the currently raised notebook page, which is
-           referred to by its numerical index given to it by the Notebook widget.
-
-           widget and data are parameters required for callbacks but are
-           ignored"""
+    def reload(self, widget, data):        
         reload_function = self.reload_function_dict[self.notebook.get_current_page()]
 
         if reload_function is not None:
@@ -138,10 +111,7 @@ class JodelExtract():
 
     def view_karma(self, widget, data):
         """ This method opens a dialog which shows the user's current karma.
-            The karma value is fetched from the API
-
-           widget and data are parameters required for callbacks but are
-           ignored"""
+        """
         reply = self.connection.karma()
 
         if self.debugDialog is not None:
@@ -153,7 +123,7 @@ class JodelExtract():
 
 
 # ----------------------------------------------------------------------
-# Methods for updating notebook tabs with posts
+# Methods for updating posts
 # ----------------------------------------------------------------------
 
     def posts(self, post_data_dict=None, mode=None):
