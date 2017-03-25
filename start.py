@@ -72,20 +72,15 @@ class JodelExtract():
         #for post_category in post_category_type:
         #    self.posts_mode_dict[post_category] = TOOLS.Connection.PostType.COMBO
 
-        # contains all ancestors of currently open posts
-        #self.ancestors = {}
-
         # POST MODE SETTINGS
         self.my_posts_mode = TOOLS.Connection.PostType.COMBO
         self.posts_mode = TOOLS.Connection.PostType.COMBO
 
-        #reload_button.connect('clicked', self.reload, None)
-        #post_button.connect('clicked', self.new_post, None)
-        #channel_button.set_image(Gtk.Image.new_from_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'images', 'channel.png')))
-        #channel_button.connect('clicked', self.new_channel, None)
-        #location_button.set_image(Gtk.Image.new_from_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'images', 'location.png')))
-        #location_button.connect('clicked', self.change_location, None)
-        #karma_button.connect('clicked', self.view_karma, None)
+        #self.reload
+        #self.new_post
+        #self.new_channel
+        #self.change_location
+        #self.view_karma
 
     def clean_tempdir(self,max_age=7*86400):
         try:
@@ -112,7 +107,6 @@ class JodelExtract():
             print "Could not connect to server"
             self.destroy()
             return None
-        #self.set_title("TOOLS: " + self.connection.get_location_string())
 
         #if initial_channels is None:
         #    recommended_channels = self.connection.recommended_channels()
@@ -121,21 +115,13 @@ class JodelExtract():
         #    else:
         #        initial_channels = []
 
-        # construct all the tabs
         self.posts(mode=self.posts_mode) # => calls posts further down the code
         #self.my_posts()
         #self.my_replies()
         #self.my_voted_posts()
         #self.my_pinned_posts()
         #for initial_channel in initial_channels:
-        #    self._open_channel(self,initial_channel)
-        #self.notebook.set_current_page(self.tab_num_dict[post_category_type.POSTS])
-        #try:
-            # Kill the loading dialog if it's there
-        #    self.loading.destroy()
-        #except AttributeError as e:
-        #    print str(e)
-        #self.show_all()
+        #   self._open_channel(self,initial_channel)
         return False
 
     def reload(self, widget, data):
