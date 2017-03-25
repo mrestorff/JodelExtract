@@ -55,7 +55,7 @@ class Post(object):
     def print_post(self):
         print ""
         print " ######## VOTES: "+str(self.post['vote_count'])+" #### DISTANCE: "+named_distance(self.post['distance'])+" #### CREATED AT: "+self.post['created_at']+" ########"
-        print self.post['message'].encode('utf-8')
+        print self.post['message'].encode('ascii', 'ignore')
 
 
 def named_distance(distance):
