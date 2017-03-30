@@ -97,14 +97,7 @@ class JodelExtract():
         #for initial_channel in initial_channels:
         #   self._open_channel(self,initial_channel)
         return False
-
-    def reload(self, widget, data):
-        reload_function = self.reload_function_dict[self.notebook.get_current_page()]
-
-        if reload_function is not None:
-            reload_function[0](*reload_function[1])
-        self.clean_tempdir()
-
+   
     def view_karma(self, widget, data):
         reply = self.connection.karma()
 
