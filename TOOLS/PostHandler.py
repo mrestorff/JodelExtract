@@ -6,7 +6,7 @@ import unicodedata
 import TOOLS.prettytime as prettytime
 import cPickle as pickle
 
-VERBOSE = True # Print to command line
+VERBOSE = False # Print to command line
 DBG_NO_IMAGES = False # Disable image download
 
 def print_verbose(message):
