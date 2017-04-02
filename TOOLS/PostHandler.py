@@ -4,9 +4,9 @@ import os.path
 import datetime
 import unicodedata
 import TOOLS.prettytime as prettytime
-import cPickle as pickle
+#import cPickle as pickle
 
-VERBOSE = False # Print to command line
+VERBOSE = True # Print to command line
 DBG_NO_IMAGES = False # Disable image download
 
 def print_verbose(message):
@@ -23,6 +23,7 @@ class Post(object):
             reply       Flag if this is an original post (False) or a reply (True)"""
 
         self.post = post
+        self.id = post.get('post_id')
         self.tempdir = tempdir
         self.main_window = main_window
         self.connection = connection
@@ -39,8 +40,7 @@ class Post(object):
         if (image_url is None):
             pass
         elif not DBG_NO_IMAGES:
-            # Download the image into the temp folder (if not yet downloaded) and
-            # display an image preview in the post
+            # Download the image into the temp folder (if not yet downloaded)
             image_headers = post.get('image_headers')
             path = os.path.join(self.tempdir, post['post_id'] + ".jpg")
             if not (os.path.exists(path) and os.path.isfile(path)):
@@ -60,9 +60,17 @@ class Post(object):
 
                 except requests.exceptions.ConnectionError as e:
                     print "failed: " + str(e)
+            self.image_url = image_url
 
         #self.save_post()
-        self.print_post()
+        #print_verbose(self.print_post())
+        self.get_data()
+
+    def get_data(self):
+        self.named_distance = named_distance(self.post['distance'])
+        date = datetime.datetime.strptime(self.post['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        self.date = date.strftime('%Y-%m-%d at %H:%M:%S')
+        #self.time_delta = prettytime.pretty(self.post['created_at'])
 
     def get_hashtags(self):
         hashtags = re.findall(r"#(\w+)", self.post['message'])
@@ -71,6 +79,10 @@ class Post(object):
             return hashtags
         else:
             return None
+
+    def update(self, new_post):
+        self.post = new_post
+        return True
 
     def save_post(self):
         """ Saves post in CSV file """

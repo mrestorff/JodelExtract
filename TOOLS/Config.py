@@ -15,12 +15,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
-# Configuration package for TOOLS
-#
-
 # app version to use when not specified otherwise
-APP_VERSION  = '4.37.5'
+APP_VERSION  = '4.38.3'
 VERBOSE = True # print to commandline
 
 # App key
@@ -29,6 +25,9 @@ WODEL_CLIENT_ID="6a62f24e-7784-0226-3fffb-5e0e895aaaf"
 PORT = 443
 
 SPLASH_TEXT="""
+    ###########################################
+    ####      Welcome to JodelExtract!     ####
+    ###########################################
 """
 
 class ConfigType():
@@ -72,8 +71,8 @@ APP_CONFIG={
     '4.35.6': ConfigType('cYjTAwjdJyiuXAyrMhkCDiVZhshhLhotNotLiPVu', version_string='4.35.6', x_api_version='0.2'),
     '4.37.2': ConfigType('OjZvbmHjcGoPhz6OfjIeDRzLXOFjMdJmAIplM7Gq', version_string='4.37.2', x_api_version='0.2'),
     '4.37.5': ConfigType('NtMEkmHjcGldPDrOfjIeDRzLXOFjMdJmAIpwyFae', version_string='4.37.5', x_api_version='0.2'),
+    '4.38.3': ConfigType('KZmLMUggDeMzQfqMNYFLWNyttEmQgClvlPyACVlH', version_string='4.38.3', x_api_version='0.2'),
     'wodel':  ConfigType('bgulhzgo9876GFKgguzTZITFGMn879087vbgGFuz', x_client_type='wodel_1.1', user_agent_string ='Jodel/1.1 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)', x_api_version='0.2', client_id=WODEL_CLIENT_ID)
-
 };
 
 

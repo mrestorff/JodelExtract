@@ -472,9 +472,9 @@ class Connection(object):
 
         One post is defined by a dict and contains the following relevant fields:
 
-        'post_id'   : A unique hex string denoting this post
-        'image_url' : Present, if this post contains an image
-        'message'   : This post's payload. Depending on the app version,contains more or less meaningless data when 'image_url' is present.
+        'post_id'       : A unique hex string denoting this post
+        'image_url'     : Present, if this post contains an image
+        'message'       : This post's payload. Depending on the app version, contains more or less meaningless data when 'image_url' is present.
         'image_headers' : The headers necessary to retrieve this iamge
         'children'      : List of post dicts describing answers to this post.
         'num_children'  : The number of posts in the children list.
@@ -529,7 +529,7 @@ class Connection(object):
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_pinned)
 
-    @deprecated
+    #@deprecated
     def recent_posts(self):
         """ Retrieves this location's most recent posts, returned as dict in the same form as
         by my_posts()"""

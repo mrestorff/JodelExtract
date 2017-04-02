@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div id="post">
+  {% if post %}
+  <article style="background-color: {{ post.color }};">
+
+    <div class="op">
+      <div class="vote_count"><span>{{ post.post.vote_count }}</span></div>
+      {% if post.image_url %}
+      <img src="{{ post.image_url }}" alt="{{ post.post.message }}" />
+      {% endif %}
+      <p>{{ post.post.message }}</p>
+      <div class="info">
+        <span>Created at: {{ post.date }}</span>
+        <a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>
+        <span>{{ post.post.child_count }} comments </span>
+        <span>Distance: {{ post.named_distance }}</span>
+      </div>
+    </div>
+
+    <div class="comments">
+    {% for comment in comments %}
+      <div class="comment">
+        <div class="vote_count"><span>{{ comment.post.vote_count }}</span></div>
+        {% if comment.image_url %}
+        <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" />
+        {% endif %}
+        <p>{{ comment.post.message }}</p>
+        <div class="info">
+          <span>Created at: {{ comment.date }}</span>
+          <a href="/user/{{ comment.post.user_handle }}"><span>Author</span></a>
+          <span>Distance: {{ comment.named_distance }}</span>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+
+  </article>
+  {% else %}
+    <em>Error</em>
+  {% endif %}
+</div>
+{% endblock %}

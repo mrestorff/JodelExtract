@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="setup">
+    <form action="/setup" method="POST">
+      <input type="text" name="location" />
+      <input type="submit" name="submit" />
+    </form>
+  </div>
+{% endblock %}

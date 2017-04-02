@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div id="posts">
+  {% for post in posts %}
+    <article style="background-color: {{ post.color }};">
+      <a href="/post/{{ post.id }}"><div>
+        <div class="vote_count"><span>{{ post.post.vote_count }}</span></div>
+        {% if post.image_url %}
+        <img src="{{ post.image_url }}" alt="{{ post.post.message }}" />
+        {% endif %}
+        <p>{{ post.post.message }}</p>
+        <div class="info">
+          <span>Created at: {{ post.date }}</span>
+          <a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>
+          <span>{{ post.post.child_count }} comments </span>
+          <span>Distance: {{ post.named_distance }}</span>
+        </div>
+      </div></a>
+    </article>
+  {% else %}
+    <em>Unbelievable. No entries here so far</em>
+  {% endfor %}
+</div>
+{% endblock %}
