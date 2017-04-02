@@ -7,7 +7,7 @@
 5. Use link "popular posts" to list the most liked posts from your location
 6. Design is still work in progress
 
-# README COMMAND LINE #
+# Readme Command Line #
 
 0. CURRENTLY DISABLED, NO POSTS ARE BEING DISPLAYED
 1. Start via command line "python main.py"
