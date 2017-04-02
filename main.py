@@ -267,6 +267,16 @@ class JodelExtract():
                 comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,userno=user_index,reply=True))
         return comments_list
 
+    def get_user_posts(self, user_id):
+        post_list = []
+        if user_id:
+            for post in dict.values(self.post_list):
+                if post.post['user_handle'] == user_id:
+                    post_list.append(post)
+            return post_list
+        else:
+            return None
+
 
 def start(loc, mode=None, channels=None):
     if loc is not '':

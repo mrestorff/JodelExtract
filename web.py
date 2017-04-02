@@ -47,12 +47,24 @@ def particular_post(post_id):
 
 @app.route('/channel/', defaults={'channel': 'Leuphana'})
 @app.route('/channel/<channel>', methods=['GET'])
-def show_post(channel):
+def channel_posts(channel):
     if not instance == None:
         post_list = instance._open_channel(channel=channel)
         return render_template('show_posts.html', posts=post_list)
     else:
         return redirect(url_for('index'))
+
+@app.route('/user/<user_id>', methods=['GET'])
+def user_posts(user_id):
+    if not instance == None:
+        post_list = instance.get_user_posts(user_id)
+        if post_list:
+            return render_template('show_posts.html', posts=post_list)
+        else:
+            return redirect(url_for('posts'))
+    else:
+        return redirect(url_for('index'))
+
 
 @app.route('/')
 def index():

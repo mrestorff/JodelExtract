@@ -8,8 +8,12 @@
   <header>
     <a href="/"><h1>JodelExtract</h1></a>
     <nav>
+      {% if request.path != "/" %}
+      <a href="/posts/popular">Popular</a>
+      <a href="/posts/discussed">Discussed</a>
+      <a href="/posts/combo">Combo</a>
       <a href="/channel/Leuphana">Leuphana Channel</a>
-      <a href="/posts/popular">Popular posts</a>
+      {% endif %}
     </nav>
   </header>
   <main>

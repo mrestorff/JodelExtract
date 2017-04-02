@@ -14,7 +14,7 @@
         <span>Created at: {{ post.date }}</span>
         <a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>
         <span>{{ post.post.child_count }} comments </span>
-        <span>Distance: {{ post.named_distance }}</span>
+        <span>{{ post.named_distance }}</span>
       </div>
     </div>
 
@@ -25,11 +25,13 @@
         {% if comment.image_url %}
         <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" />
         {% endif %}
-        <p>{{ comment.post.message }}</p>
+        <p class="{% if comment.post.user_handle == post.post.user_handle %}oj{% endif %}">
+        {{ comment.post.message }}
+        </p>
         <div class="info">
           <span>Created at: {{ comment.date }}</span>
           <a href="/user/{{ comment.post.user_handle }}"><span>Author</span></a>
-          <span>Distance: {{ comment.named_distance }}</span>
+          <span>{{ comment.named_distance }}</span>
         </div>
       </div>
     {% endfor %}
