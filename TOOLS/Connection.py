@@ -340,11 +340,14 @@ class Connection(object):
                     else:
                         print "Request failed: Unkown reason (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
             else:
-                print "Request failed: "# + r.status_code + " (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
+                print "Request failed: " + r.status_code + " (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
         return None
 
     def get_location_string(self):
         return self.location['city'] + ',' + self.location['country']
+
+    def get_location_city(self):
+        return self.location['city']
 
     def _get_access_token_dict(self):
         """

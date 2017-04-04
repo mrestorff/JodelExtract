@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="setup">
-    <form action="/setup" method="POST">
+    <form action="/setup?kill_session=False" method="POST">
       <input type="text" name="location" />
       <input type="submit" name="submit" />
     </form>

@@ -47,6 +47,9 @@ section#content {
   background: white;
   color: #FF9908;
 }
+.setup input[type=submit] {
+  cursor: pointer;
+}
 
 /* Post overview */
 #posts, #post {

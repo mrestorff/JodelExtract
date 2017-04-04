@@ -4,13 +4,11 @@ import os.path
 import datetime
 import unicodedata
 import TOOLS.prettytime as prettytime
-#import cPickle as pickle
-
-VERBOSE = True # Print to command line
-DBG_NO_IMAGES = False # Disable image download
+import TOOLS.Config as cfg
+import urlparse, urllib
 
 def print_verbose(message):
-    if VERBOSE:
+    if cfg.VERBOSE:
         print message
 
 class Post(object):
@@ -28,8 +26,11 @@ class Post(object):
         self.main_window = main_window
         self.connection = connection
         self.reply = reply
-        #print_verbose(" # # # # ")
-        print_verbose("Handling post " + post['post_id'])
+
+        if reply:
+            print_verbose("Handling comment " + post['post_id'])
+        else:
+            print_verbose("Handling post " + post['post_id'])
 
         # create color hex code
         self.color = '#' + post['color']
@@ -39,7 +40,7 @@ class Post(object):
         image_url = post.get('image_url')
         if (image_url is None):
             pass
-        elif not DBG_NO_IMAGES:
+        elif not cfg.DBG_NO_IMAGES:
             # Download the image into the temp folder (if not yet downloaded)
             image_headers = post.get('image_headers')
             path = os.path.join(self.tempdir, post['post_id'] + ".jpg")

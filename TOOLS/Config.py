@@ -17,7 +17,23 @@
 
 # app version to use when not specified otherwise
 APP_VERSION  = '4.38.3'
-VERBOSE = True # print to commandline
+
+# General and debugging settings
+VERBOSE = True # Print to command line
+DEBUG = False
+DBG_NO_IMAGES = False # Disable image download
+
+# App name and author for temp directory
+APP_NAME = "JodelExtract"
+APP_AUTHOR = "MR"
+
+MY_USER_ID = "158813957148f5c32faf16faab738946ba0a16ef"
+
+# Flask database config
+DATABASE_PATH = 'tmp/'
+USERNAME = ''
+PASSWORD = ''
+
 
 # App key
 ANDROID_CLIENT_ID="81e8a76e-1e02-4d17-9ba0-8a7020261b26"

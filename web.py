@@ -1,10 +1,36 @@
-from flask import Flask, session, request
-from flask import url_for, redirect, render_template
+import os.path
+from flask import Flask, session, request, url_for, redirect, render_template, g
+import sqlite3
 import main
+import TOOLS.Config as cfg
 
 app = Flask(__name__)
+app.config['DEBUG'] = cfg.DEBUG
 instance = None
 
+def get_db(loc):
+    path = os.path.join(cfg.DATABASE_PATH, loc + ".db")
+    db = getattr(g, '_database', None)
+    if db is None:
+        if not os.path.isfile(path):
+            db = g._database = sqlite3.connect(path)
+            with app.open_resource('schema.sql', mode='r') as f:
+                db.cursor().executescript(f.read())
+            db.commit()
+            print("Initialized the database")
+        else:
+            db = g._database = sqlite3.connect(path)
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+# ----------------------------------------------
+# Request and site methods
+# ----------------------------------------------
 @app.after_request
 def add_header(response):
     """
@@ -17,15 +43,22 @@ def add_header(response):
     response.headers["Expires"] = "0" # Proxies.
     return response
 
-@app.route('/setup', methods=['POST'])
+@app.route('/setup', methods=['POST', 'GET'])
 def setup():
-    location = request.form.get('location')
     global instance
-    instance = main.start(loc=location)
-    if not instance == None:
-        return redirect(url_for('posts'))
-    else:
+    if request.args.get('kill_session') == "True":
+        del(instance)
+        instance = None
         return redirect(url_for('index'))
+    else:
+        location = request.form.get('location')
+        instance = main.start(loc=location)
+        if not instance == None:
+            get_db(instance.connection.get_location_city())
+            session['title'] = "JodelExtract: " + instance.connection.get_location_string()
+            return redirect(url_for('posts'))
+        else:
+            return redirect(url_for('index'))
 
 @app.route('/posts/', defaults={'mode': 'recent'})
 @app.route('/posts/<mode>', methods=['GET'])
@@ -65,10 +98,10 @@ def user_posts(user_id):
     else:
         return redirect(url_for('index'))
 
-
 @app.route('/')
 def index():
     if not instance:
+        session['title'] = "JodelExtract"
         return render_template('setup.html')
     else:
         return redirect(url_for('posts'))

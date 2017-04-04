@@ -10,17 +10,14 @@ import sys
 import enum
 import appdirs
 import time
-#from PIL import Image
 import TOOLS.Connection
 import TOOLS.PostHandler
+import TOOLS.Config as cfg
 import requests
 
 # enable utf8
 reload(sys)
 sys.setdefaultencoding('utf8')
-
-APP_NAME = "JodelExtract"
-APP_AUTHOR = "MR"
 
 def timesort(post):
     """Returns post's post ID as an int for sorting"""
@@ -31,7 +28,7 @@ class JodelExtract():
 
     def __init__(self, recent_posts=None):
         try:
-            self.tempdir = appdirs.user_cache_dir(APP_NAME,APP_AUTHOR)
+            self.tempdir = appdirs.user_cache_dir(cfg.APP_NAME,cfg.APP_AUTHOR)
             if not os.path.exists(self.tempdir):
                 os.makedirs(self.tempdir)
             print "Tempdir set to: " + self.tempdir
@@ -211,6 +208,8 @@ class JodelExtract():
             for post in channel_posts_list:
                     p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
                     temp_post_list.append(p)
+                    # inserting into permanent list as well
+                    self.post_list[post['post_id']] = p
         return temp_post_list
 
     def _open_post(self, post_id, main=None):

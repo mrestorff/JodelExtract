@@ -7,12 +7,13 @@
         <div class="vote_count"><span>{{ post.post.vote_count }}</span></div>
         {% if post.image_url %}
         <img src="{{ post.image_url }}" alt="{{ post.post.message }}" />
-        {% endif %}
+        {% else %}
         <p>{{ post.post.message }}</p>
+        {% endif %}
         <div class="info">
           <span>Created at: {{ post.date }}</span>
           <a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>
-          <span>{{ post.post.child_count }} comments </span>
+          {% if post.post.child_count > 0 %}<span> {{ post.post.child_count }} comments </span>{% endif %}
           <span>{{ post.named_distance }}</span>
         </div>
       </div></a>

@@ -1,17 +1,18 @@
 <!doctype html>
 <html>
 <head>
-  <title>JodelExtract</title>
+  <title>{{ session['title'] }}</title>
   <link rel=stylesheet type=text/css href="/static/style.css">
 </head>
 <body>
   <header>
-    <a href="/"><h1>JodelExtract</h1></a>
+    <a href="/"><h1>{{ session['title'] }}</h1></a>
     <nav>
       {% if request.path != "/" %}
+      <a href="/setup?kill_session=True">Change Location</a>
+      <a href="/posts/recent">Recent</a>
       <a href="/posts/popular">Popular</a>
       <a href="/posts/discussed">Discussed</a>
-      <a href="/posts/combo">Combo</a>
       <a href="/channel/Leuphana">Leuphana Channel</a>
       {% endif %}
     </nav>
