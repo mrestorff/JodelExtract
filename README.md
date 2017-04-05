@@ -21,7 +21,6 @@
 * `python-requests`
 * `python-appdirs`
 * `python-shutil`
-* `python-pillow`
 * `python-enum34`
 * `python-urwid`
 * `python-dateutil`
