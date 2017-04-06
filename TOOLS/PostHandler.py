@@ -64,7 +64,8 @@ class Post(object):
             self.image_url = image_url
 
         #self.save_post()
-        #print_verbose(self.print_post())
+        if cfg.DEBUG:
+            print post
         self.get_data()
 
     def get_data(self):

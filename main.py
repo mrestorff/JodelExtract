@@ -10,10 +10,10 @@ import sys
 import enum
 import appdirs
 import time
+import requests
 import TOOLS.Connection
 import TOOLS.PostHandler
 import TOOLS.Config as cfg
-import requests
 
 # enable utf8
 reload(sys)

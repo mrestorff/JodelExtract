@@ -94,10 +94,10 @@ section#content {
 .comment {
   margin-top: 25px;
 }
-.comment .oj::before {
+.comment.oj p::before {
   content: "OJ: ";
   font-weight: bold;
 }
-.comment .oj {
+.comment.oj {
   font-style: italic;
 }

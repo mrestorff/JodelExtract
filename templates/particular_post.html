@@ -21,15 +21,15 @@
 
     <div class="comments">
     {% for comment in comments %}
-      <div class="comment">
+      <div class="comment {% if comment.post.user_handle == post.post.user_handle %}oj{% endif %}">
         <div class="vote_count"><span>{{ comment.post.vote_count }}</span></div>
         {% if comment.image_url %}
         <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" />
-        <p class="{% if comment.post.user_handle == post.post.user_handle %}oj{% endif %}">
         {% else %}
-        {{ comment.post.message }}
-        {% endif %}
+        <p>
+          {{ comment.post.message }}
         </p>
+        {% endif %}        
         <div class="info">
           <span>Created at: {{ comment.date }}</span>
           <a href="/user/{{ comment.post.user_handle }}"><span>Author</span></a>

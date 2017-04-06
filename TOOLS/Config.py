@@ -1,5 +1,4 @@
-# TOOLS - An Open JOdel Client
-# Copyright (C) 2016  Christian Fibich
+# JodelExtract Configuration File
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +19,7 @@ APP_VERSION  = '4.38.3'
 
 # General and debugging settings
 VERBOSE = True # Print to command line
-DEBUG = False
+DEBUG = False # print posts to command line & activate Flask debugger
 DBG_NO_IMAGES = False # Disable image download
 
 # App name and author for temp directory
