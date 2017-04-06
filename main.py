@@ -246,13 +246,6 @@ class JodelExtract():
                 temp_post_list.append(p)
                 self.post_list[this_post['post_id']] = p
 
-            # extract data we need for user numbering
-            #user_handle = post.get('user_handle')
-            #userlist = None
-            #if user_handle is not None:
-            #    # OP gets id 0
-            #    userlist = {post['user_handle']: 0}
-
             # Check if this post has replies, and list them if yes
             children_posts_list = post.get('replies')
             # Counts the number of responses, counts even when one poster posts multiple times
@@ -260,16 +253,7 @@ class JodelExtract():
             comments_list = []
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
-                    # Sometimes, the API supplies us with user numbers to
-                    # view who posted which answer
-                    #response_index += 1
-                    #user_handle = reply.get('user_handle')
-                    #user_index = None
-                    #if (user_handle is not None) and (userlist is not None):
-                    #    if user_handle not in userlist:
-                    #        userlist[user_handle] = response_index
-                    #    user_index = userlist[user_handle]
-                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,userno=user_index,reply=True))
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
             return comments_list
 
         else:
