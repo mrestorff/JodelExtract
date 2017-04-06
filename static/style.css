@@ -89,7 +89,7 @@ section#content {
   margin-bottom: 10px;
   padding-bottom: 20px;
   line-height: 1.3em;
-  border-bottom: 2px solid white;
+  /*border-bottom: 2px solid white;*/
 }
 .comment {
   margin-top: 25px;

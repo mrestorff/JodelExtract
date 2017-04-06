@@ -4,7 +4,7 @@
   {% if post %}
   <article style="background-color: {{ post.color }};">
 
-    <div class="op">
+    <div class="op" style="{% if comments %}border-bottom: 2px solid white; margin-bottom: 0px !important;{% endif %}">
       <div class="vote_count"><span>{{ post.post.vote_count }}</span></div>
       {% if post.image_url %}
       <img src="{{ post.image_url }}" alt="{{ post.post.message }}" />
@@ -21,7 +21,7 @@
 
     <div class="comments">
     {% for comment in comments %}
-      <div class="comment {% if comment.post.user_handle == post.post.user_handle %}oj{% endif %}">
+      <div class="comment {% if comment.post.user_handle == post.post.user_handle or comment.by_oj %}oj{% endif %}">
         <div class="vote_count"><span>{{ comment.post.vote_count }}</span></div>
         {% if comment.image_url %}
         <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" />
@@ -29,7 +29,7 @@
         <p>
           {{ comment.post.message }}
         </p>
-        {% endif %}        
+        {% endif %}
         <div class="info">
           <span>Created at: {{ comment.date }}</span>
           <a href="/user/{{ comment.post.user_handle }}"><span>Author</span></a>

@@ -180,7 +180,8 @@ class JodelExtract():
                     print post[input]
                     print "#########"
         print len(self.post_list)
-        return temp_post_list
+        last_post = temp_post_list[len(temp_post_list)-1]
+        return temp_post_list, last_post.id
 
 
     def _open_channel(self, channel, main=None):
@@ -218,53 +219,107 @@ class JodelExtract():
         # Fetch posts from the API
         this_post = post = self.connection.particular_post(post_id)
 
-        # get post & answers
-        if this_post is None:
-            print "Could not fetch " + post_id
-            for post in self.post_data_dict['posts']:
-                if post['post_id'] == post_id:
-                    this_post = post
-                    break
-        if this_post is None:
-            return False
+        # handling response difference between API v2 and v3
+        api_version = 'v3'
 
-        # generate & update post object for original post
-        temp_post_list = []
-        if this_post['post_id'] in self.post_list:
-            p = self.post_list[this_post['post_id']]
-            # update post object
-            p.update(this_post)
-            temp_post_list.append(p)
+        if api_version == 'v3':
+            this_post = this_post['details']
+            # get post & answers
+            if this_post is None:
+                print "Could not fetch " + post_id
+                for post in self.post_data_dict['posts']:
+                    if post['post_id'] == post_id:
+                        this_post = post
+                        break
+            if this_post is None:
+                return False
+
+            # generate & update post object for original post
+            temp_post_list = []
+            if this_post['post_id'] in self.post_list:
+                p = self.post_list[this_post['post_id']]
+                # update post object
+                p.update(this_post)
+                temp_post_list.append(p)
+            else:
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                temp_post_list.append(p)
+                self.post_list[this_post['post_id']] = p
+
+            # extract data we need for user numbering
+            #user_handle = post.get('user_handle')
+            #userlist = None
+            #if user_handle is not None:
+            #    # OP gets id 0
+            #    userlist = {post['user_handle']: 0}
+
+            # Check if this post has replies, and list them if yes
+            children_posts_list = post.get('replies')
+            # Counts the number of responses, counts even when one poster posts multiple times
+            response_index = 0
+            comments_list = []
+            if children_posts_list is not None and len(children_posts_list) > 0:
+                for reply in children_posts_list:
+                    # Sometimes, the API supplies us with user numbers to
+                    # view who posted which answer
+                    #response_index += 1
+                    #user_handle = reply.get('user_handle')
+                    #user_index = None
+                    #if (user_handle is not None) and (userlist is not None):
+                    #    if user_handle not in userlist:
+                    #        userlist[user_handle] = response_index
+                    #    user_index = userlist[user_handle]
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,userno=user_index,reply=True))
+            return comments_list
+
         else:
-            p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
-            temp_post_list.append(p)
-            self.post_list[this_post['post_id']] = p
+            # get post & answers
+            if this_post is None:
+                print "Could not fetch " + post_id
+                for post in self.post_data_dict['posts']:
+                    if post['post_id'] == post_id:
+                        this_post = post
+                        break
+            if this_post is None:
+                return False
 
-        # extract data we need for user numbering
-        user_handle = post.get('user_handle')
-        userlist = None
-        if user_handle is not None:
-            # OP gets id 0
-            userlist = {post['user_handle']: 0}
+            # generate & update post object for original post
+            temp_post_list = []
+            if this_post['post_id'] in self.post_list:
+                p = self.post_list[this_post['post_id']]
+                # update post object
+                p.update(this_post)
+                temp_post_list.append(p)
+            else:
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                temp_post_list.append(p)
+                self.post_list[this_post['post_id']] = p
 
-        # Check if this post has replies, and list them if yes
-        children_posts_list = this_post.get('children')
-        # Counts the number of responses, counts even when one poster posts multiple times
-        response_index = 0
-        comments_list = []
-        if children_posts_list is not None and len(children_posts_list) > 0:
-            for reply in children_posts_list:
-                # Sometimes, the API supplies us with user numbers to
-                # view who posted which answer
-                response_index += 1
-                user_handle = reply.get('user_handle')
-                user_index = None
-                if (user_handle is not None) and (userlist is not None):
-                    if user_handle not in userlist:
-                        userlist[user_handle] = response_index
-                    user_index = userlist[user_handle]
-                comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,userno=user_index,reply=True))
-        return comments_list
+            # extract data we need for user numbering
+            user_handle = post.get('user_handle')
+            userlist = None
+            if user_handle is not None:
+                # OP gets id 0
+                userlist = {post['user_handle']: 0}
+
+            # Check if this post has replies, and list them if yes
+            children_posts_list = this_post.get('children')
+            # Counts the number of responses, counts even when one poster posts multiple times
+            response_index = 0
+            comments_list = []
+            if children_posts_list is not None and len(children_posts_list) > 0:
+                for reply in children_posts_list:
+                    # Sometimes, the API supplies us with user numbers to
+                    # view who posted which answer
+                    response_index += 1
+                    user_handle = reply.get('user_handle')
+                    user_index = None
+                    if (user_handle is not None) and (userlist is not None):
+                        if user_handle not in userlist:
+                            userlist[user_handle] = response_index
+                        user_index = userlist[user_handle]
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,userno=user_index,reply=True))
+            return comments_list
 
     def get_user_posts(self, user_id):
         post_list = []

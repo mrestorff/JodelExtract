@@ -31,10 +31,11 @@ import datetime as dt
 import enum
 import keyring
 import requests
-import TOOLS.Config
-import TOOLS.GeoIP
 import warnings
 import functools
+import TOOLS.Config
+import TOOLS.GeoIP
+import TOOLS.Config as cfg
 
 
 CFG_DIR = ".jodel"
@@ -119,11 +120,13 @@ class APIMethodsType:
     get_karma             = APIMethod(method='GET', url='users/karma/')
     get_config            = APIMethod(method='GET', url='user/config/', version='v3')
     get_posts             = APIMethod(method='GET', url='posts/')
+    #get_posts_new         = APIMethod(method='GET', url='posts/location/', postfix='?after=58e6ad9fafb277a24c302625',get_parameters=True)
     get_combo             = APIMethod(method='GET', url='posts/location/combo/',version='v3',get_parameters=True)
     get_popular           = APIMethod(method='GET', url='posts/location/popular/')
     get_discussed         = APIMethod(method='GET', url='posts/location/discussed/')
     get_country_posts     = APIMethod(method='GET', url='feed/country/', country=True)
-    get_post              = APIMethod(method='GET', url='posts/', postid=True)
+    #get_post              = APIMethod(method='GET', url='posts/', postid=True)
+    get_post              = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details?details=true&reversed=false') #new
     get_my_posts          = APIMethod(method='GET', url='posts/mine/')
     get_my_replies        = APIMethod(method='GET', url='posts/mine/replies/')
     get_my_votes          = APIMethod(method='GET', url='posts/mine/votes/')
@@ -137,6 +140,7 @@ class APIMethodsType:
     unpin                 = APIMethod(method='PUT', url='posts/', postid=True, postfix='unpin/')
     new_post              = APIMethod(method='POST', url='posts/', payload=True)
     get_channel           = APIMethod(method='GET', url='posts/channel/combo',get_parameters=True,version='v3')
+    #get_channel_new       = APIMethod(method='GET', url='posts/channel/combo',get_parameters=True,version='v3', postfix='&after=58e63a3e9d6e9d17009eda0e')
     follow_channel        = APIMethod(method='PUT', url='user/followChannel',get_parameters=True,version='v3',expect=204)
     unfollow_channel      = APIMethod(method='PUT', url='user/unfollowChannel',get_parameters=True,version='v3',expect=204)
     get_pinned            = APIMethod(method='GET', url='posts/mine/pinned/')
@@ -178,7 +182,8 @@ class Connection(object):
 
     def print_verbose(self, message):
         """Prints only if the verbose property is set"""
-        if self.verbose:
+        #if self.verbose:
+        if cfg.CONNECTION_VERBOSE:
             print message
 
     def __init__(self, location=None, citycc=None, uid=None, app_version=None, app_config=None):
@@ -537,6 +542,10 @@ class Connection(object):
         """ Retrieves this location's most recent posts, returned as dict in the same form as
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_posts)
+
+    def recent_after_post(self):
+        """ Retrieves the most recent posts after post_id xyz, returned as dict in the same form as by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_combo,get_parameters={'lat': self.location['loc_coordinates']['lat'],'lng': self.location['loc_coordinates']['lng'],'home':'false'})
 
     def combo_posts(self):
         """ Retrieves a combination of this location's most recent and most upvoted posts,returned as dict in the same form as by my_posts()"""

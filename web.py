@@ -64,8 +64,8 @@ def setup():
 @app.route('/posts/<mode>', methods=['GET'])
 def posts(mode):
     if not instance == None:
-        post_list = instance.posts(mode=mode)
-        return render_template('show_posts.html', posts=post_list)
+        post_list, last_post = instance.posts(mode=mode)
+        return render_template('show_posts.html', posts=post_list, last_post=last_post)
     else:
         return redirect(url_for('index'))
 

@@ -29,6 +29,12 @@ class Post(object):
 
         if reply:
             print_verbose("Handling comment " + post['post_id'])
+            if post['user_handle'] == "oj":
+                self.by_oj = True
+                self.replier = 0
+                print self.by_oj
+            else:
+                self.replier = post['replier']
         else:
             print_verbose("Handling post " + post['post_id'])
 

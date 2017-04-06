@@ -19,6 +19,7 @@ APP_VERSION  = '4.38.3'
 
 # General and debugging settings
 VERBOSE = True # Print to command line
+CONNECTION_VERBOSE = False # Connection debug printing
 DEBUG = False # print posts to command line & activate Flask debugger
 DBG_NO_IMAGES = False # Disable image download
 
