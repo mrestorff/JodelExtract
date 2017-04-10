@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div id="channels">
+    <ul>
+    {% for channel in channels %}
+      <a href="/channel/{{ channel['channel'] }}/recent"><li>{{ channel['channel'] }} / {{ channel['followers'] }} Followers</li></a>
+    {% else %}
+      <h3 class="error">No channels available</h3>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

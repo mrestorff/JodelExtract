@@ -5,8 +5,8 @@
   font-family: sans-serif;
   color: #ffffff;
 }
-a:link, a:visited {
-  color: #ffffff
+a:hover {
+  text-decoration: underline;
 }
 
 header {
@@ -25,14 +25,16 @@ nav a:first-child {
 }
 
 main {
-  margin-top: 30px;
+  margin: 30px 0;
 }
 section#content {
   margin: auto;
   width: 70%;
   max-width: 800px;
+  min-width: 500px;
 }
 
+/* Setup form */
 .setup {
   margin: auto;
 }
@@ -52,7 +54,7 @@ section#content {
 }
 
 /* Post overview */
-#posts, #post {
+content {
   margin: auto;
   max-width: 100%;
 }
@@ -60,6 +62,9 @@ section#content {
   padding: 10px;
   min-width: 500px;
   margin-bottom: 10px;
+}
+#posts a:hover, #post a:hover {
+  text-decoration: none;
 }
 .vote_count {
   float: right;
@@ -81,6 +86,23 @@ section#content {
 .info span {
   margin-right: 15px;
 }
+.error {
+  color: red !important;
+  font-size: 1.5em;
+}
+
+/* Channel list */
+#channels {
+  background: #FF9908;
+  padding: 20px;
+}
+#channels li {
+  margin: 0.3em;
+  list-style: none;
+}
+#channels li:hover {
+  text-decoration: underline;
+}
 
 /* Single Post & comments */
 #post .op {
@@ -89,15 +111,22 @@ section#content {
   margin-bottom: 10px;
   padding-bottom: 20px;
   line-height: 1.3em;
-  /*border-bottom: 2px solid white;*/
 }
 .comment {
   margin-top: 25px;
+}
+.comment p {
+  max-width: 90%;
 }
 .comment.oj p::before {
   content: "OJ: ";
   font-weight: bold;
 }
-.comment.oj {
+.comment.oj p {
   font-style: italic;
+}
+
+a span.next_posts {
+  color: #FF9908;
+  text-align: right;
 }

@@ -36,17 +36,8 @@ class JodelExtract():
             print "Cannot create tempdir: "+str(e)
             return False
 
-        # dictionary of dynamically generated notebook pages
-        #self.notebook_pages_dict = {}
-        # map post_category <=> page container widget
-        #self.page_container_widget_dict = {}
-        # dictionary for tuples of function and parameter list to refresh each tab
-        #self.reload_function_dict = {}
-        # map post_category_type <=> tab number
-        #self.tab_num_dict = {}
         self.posts_mode_dict = {}
         self.post_list = {}
-        #self.my_posts_notebook_page = None
 
         #for post_category in post_category_type:
         #    self.posts_mode_dict[post_category] = TOOLS.Connection.PostType.COMBO
@@ -86,12 +77,13 @@ class JodelExtract():
             self.destroy()
             return None
 
-        #if initial_channels is None:
-        #    recommended_channels = self.connection.recommended_channels()
-        #    if recommended_channels is not False:
-        #        initial_channels = [channel['channel'] for channel in recommended_channels['recommended']]
-        #    else:
-        #        initial_channels = []
+        # get local channels ordered by popularity
+        if initial_channels is None:
+            channels = self.connection.recommended_channels()
+            if channels is not False:
+                self.channel_list = sorted(channels['local'], key=lambda channel: channel['followers'], reverse=True)
+            else:
+                initial_channels = []
 
         if mode is not None:
             self.posts_mode = mode
@@ -101,9 +93,10 @@ class JodelExtract():
         #self.my_replies()
         #self.my_voted_posts()
         #self.my_pinned_posts()
-        if initial_channels is not None:
-            for initial_channel in initial_channels:
-                self._open_channel(self,initial_channel)
+
+        #if initial_channels is not None:
+        #    for initial_channel in initial_channels:
+        #        self._open_channel(self,initial_channel)
         return False
 
     def view_karma(self, widget, data):
@@ -119,7 +112,7 @@ class JodelExtract():
 # Methods for updating posts
 # ----------------------------------------------------------------------
 
-    def posts(self, post_data_dict=None, mode=None):
+    def posts(self, mode=None, after_post_id=None, post_data_dict=None):
         """ post_data_dict  Initial data for the tab (do not fetch from API)
             mode  Data fetching mode (e.g. popular mode) from TOOLS.Connection.PostType
         """
@@ -131,18 +124,18 @@ class JodelExtract():
         # Fetch posts from the API if no data is supplied
         if post_data_dict is None:
             if mode == TOOLS.Connection.PostType.POPULAR or mode == "popular":
-                post_data_dict = self.connection.popular_posts()
+                post_data_dict = self.connection.popular_posts(after_post_id)
             elif mode == TOOLS.Connection.PostType.DISCUSSED or mode == "discussed":
-                post_data_dict = self.connection.discussed_posts()
+                post_data_dict = self.connection.discussed_posts(after_post_id)
             elif mode == TOOLS.Connection.PostType.COMBO or mode == "combo":
                 raw_post_data_dict = self.connection.combo_posts()
                 post_data_dict = {'posts': sorted(raw_post_data_dict['replied'] +
                         raw_post_data_dict['voted'] +
                         raw_post_data_dict['recent'],key=timesort,reverse=True)}
             elif mode == TOOLS.Connection.PostType.ALL or mode == "recent":
-                post_data_dict = self.connection.recent_posts()
+                post_data_dict = self.connection.recent_posts(after_post_id)
             else:
-                post_data_dict = self.connection.recent_posts()
+                post_data_dict = self.connection.recent_posts(after_post_id)
 
         if post_data_dict is False:
             print "Error! Could not fetch post data."
@@ -179,16 +172,16 @@ class JodelExtract():
                     print "#########"
                     print post[input]
                     print "#########"
-        print len(self.post_list)
+
         last_post = temp_post_list[len(temp_post_list)-1]
         return temp_post_list, last_post.id
 
 
-    def _open_channel(self, channel, main=None):
+    def _open_channel(self, channel, after_post_id=None, main=None):
         """ Load posts for channel or hashtag from API """
 
         # Fetch posts from the API
-        channel_data_dict = self.connection.get_channel(channel)
+        channel_data_dict = self.connection.get_channel(channel, after_post_id)
 
         if channel_data_dict is False:
             return
@@ -198,20 +191,18 @@ class JodelExtract():
         except TypeError:
             head = channel
 
-        print """
-        #########################################
-        Channel loading: @"""+channel+"\n"
-
         # Check if this channel has posts, and list them if yes
         channel_posts_list = channel_data_dict.get('recent')
-        temp_post_list = []
         if channel_posts_list is not None and len(channel_posts_list) > 0:
+            print "Loading channel @" + channel
+            temp_post_list = []
             for post in channel_posts_list:
-                    p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
-                    temp_post_list.append(p)
-                    # inserting into permanent list as well
-                    self.post_list[post['post_id']] = p
-        return temp_post_list
+                p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
+                temp_post_list.append(p)
+                # inserting into permanent list as well
+                self.post_list[post['post_id']] = p
+            return temp_post_list
+
 
     def _open_post(self, post_id, main=None):
         """ Update original post and load comments from API """

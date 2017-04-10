@@ -119,14 +119,17 @@ class APIMethodsType:
     register              = APIMethod(method='POST', url='users/', payload=True, noauth=True)
     get_karma             = APIMethod(method='GET', url='users/karma/')
     get_config            = APIMethod(method='GET', url='user/config/', version='v3')
-    get_posts             = APIMethod(method='GET', url='posts/')
-    #get_posts_new         = APIMethod(method='GET', url='posts/location/', postfix='?after=58e6ad9fafb277a24c302625',get_parameters=True)
+    #get_posts             = APIMethod(method='GET', url='posts/')
+    get_posts             = APIMethod(method='GET', url='posts/location/', get_parameters=True)
     get_combo             = APIMethod(method='GET', url='posts/location/combo/',version='v3',get_parameters=True)
-    get_popular           = APIMethod(method='GET', url='posts/location/popular/')
-    get_discussed         = APIMethod(method='GET', url='posts/location/discussed/')
+    #get_popular           = APIMethod(method='GET', url='posts/location/popular/')
+    #get_discussed         = APIMethod(method='GET', url='posts/location/discussed/')
+    get_popular           = APIMethod(method='GET', url='posts/location/popular/', get_parameters=True) #new
+    get_discussed         = APIMethod(method='GET', url='posts/location/discussed/', get_parameters=True) #new
     get_country_posts     = APIMethod(method='GET', url='feed/country/', country=True)
     #get_post              = APIMethod(method='GET', url='posts/', postid=True)
     get_post              = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details?details=true&reversed=false') #new
+    get_share_url         = APIMethod(method='POST', url='posts/', postid=True, version='v3', postfix='share') #new
     get_my_posts          = APIMethod(method='GET', url='posts/mine/')
     get_my_replies        = APIMethod(method='GET', url='posts/mine/replies/')
     get_my_votes          = APIMethod(method='GET', url='posts/mine/votes/')
@@ -140,12 +143,14 @@ class APIMethodsType:
     unpin                 = APIMethod(method='PUT', url='posts/', postid=True, postfix='unpin/')
     new_post              = APIMethod(method='POST', url='posts/', payload=True)
     get_channel           = APIMethod(method='GET', url='posts/channel/combo',get_parameters=True,version='v3')
-    #get_channel_new       = APIMethod(method='GET', url='posts/channel/combo',get_parameters=True,version='v3', postfix='&after=58e63a3e9d6e9d17009eda0e')
+    get_channel_discussed = APIMethod(method='GET', url='posts/channel/discussed',get_parameters=True,version='v3',) #new
+    get_channel_recent    = APIMethod(method='GET', url='posts/channel',get_parameters=True,version='v3') #new
+    get_channel_popular   = APIMethod(method='GET', url='posts/channel/popular',get_parameters=True,version='v3') #new
     follow_channel        = APIMethod(method='PUT', url='user/followChannel',get_parameters=True,version='v3',expect=204)
     unfollow_channel      = APIMethod(method='PUT', url='user/unfollowChannel',get_parameters=True,version='v3',expect=204)
     get_pinned            = APIMethod(method='GET', url='posts/mine/pinned/')
-    recommended_chnls     = APIMethod(method='GET', url='user/recommendedChannels',version='v3')
-    get_user_config       = APIMethod(method='GET', url='user/config',version='v3')
+    recommended_chnls     = APIMethod(method='GET', url='user/recommendedChannels', version='v3')
+    get_user_config       = APIMethod(method='GET', url='user/config', version='v3')
     get_captcha           = APIMethod(method='GET', url='user/verification/imageCaptcha', version='v3')
     post_captcha          = APIMethod(method='POST', url='user/verification/imageCaptcha', version='v3')
     get_hashtag_combo     = APIMethod(method='GET', url='posts/hashtag/combo', get_parameters=True, version='v3')
@@ -345,7 +350,7 @@ class Connection(object):
                     else:
                         print "Request failed: Unkown reason (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
             else:
-                print "Request failed: " + r.status_code + " (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
+                print "Request failed! "# + r.status_code + " (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
         return None
 
     def get_location_string(self):
@@ -537,23 +542,66 @@ class Connection(object):
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_pinned)
 
-    #@deprecated
-    def recent_posts(self):
+    # MAIN FEED METHODS #
+    def combo_posts(self):
+        """ Retrieves a combination of this location's most recent and most upvoted posts, returned
+        as dict in the same form as by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_combo,get_parameters={'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'stickies':'false'})
+
+    def recent_posts(self, after_post_id): #new
+        """ Retrieves the most recent posts after post_id xyz, returned as dict in the same form
+        as by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_posts,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
+
+    def popular_posts(self, after_post_id): #new
+        """ Retrieves this location's most upvoted posts, returned as dict in the same form as
+        by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_popular,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
+
+    def discussed_posts(self, after_post_id): #new
+        """ Retrieves this location's most commented posts, returned as dict in the same form as
+        by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
+
+    @deprecated
+    def recent_posts_old(self):
         """ Retrieves this location's most recent posts, returned as dict in the same form as
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_posts)
 
-    def recent_after_post(self):
-        """ Retrieves the most recent posts after post_id xyz, returned as dict in the same form as by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_combo,get_parameters={'lat': self.location['loc_coordinates']['lat'],'lng': self.location['loc_coordinates']['lng'],'home':'false'})
+    @deprecated
+    def popular_posts_old(self):
+        """ Retrieves this location's most upvoted posts, returned as dict in the same form as
+        by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_popular)
 
-    def combo_posts(self):
-        """ Retrieves a combination of this location's most recent and most upvoted posts,returned as dict in the same form as by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_combo,get_parameters={'lat': self.location['loc_coordinates']['lat'],'lng': self.location['loc_coordinates']['lng'],'stickies':'false'})
+    @deprecated
+    def discussed_posts_old(self):
+        """ Retrieves this location's most commented posts, returned as dict in the same form as
+        by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed)
 
-    def get_channel(self,channel):
+    # CHANNEL METHODS #
+    @deprecated
+    def get_channel_old(self,channel):
         """ Retrieves posts containing a given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel,get_parameters={'channel': channel})
+
+    def get_channel(self, channel, after_post_id): #new
+        """ Retrieves posts containing a given hashtag """
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_channel,get_parameters={'channel': channel, 'after': after_post_id})
+
+    def get_channel_popular(self, channel, after_post_id): #new
+        """ Retrieves popular posts containing a given hashtag """
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_popular,get_parameters={'channel': channel, 'after': after_post_id})
+
+    def get_channel_discussed(self, channel, after_post_id):# #new
+        """ Retrieves discussed posts containing a given hashtag """
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_discussed,get_parameters={'channel': channel, 'after': after_post_id})
+
+    def get_channel_recent(self, channel, after_post_id): #new
+        """ Retrieves recent posts containing a given hashtag """
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_recent,get_parameters={'channel': channel, 'after': after_post_id})
 
     def follow_channel(self,channel):
         """ Follows a given hashtag """
@@ -586,16 +634,6 @@ class Connection(object):
     def get_user_config(self):
         """ Retrieves user's configuration """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_user_config)
-
-    def popular_posts(self):
-        """ Retrieves this location's most upvoted posts, returned as dict in the same form as
-        by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_popular)
-
-    def discussed_posts(self):
-        """ Retrieves this location's most commented posts, returned as dict in the same form as
-        by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed)
 
     def country_feed(self):
         """ Retrieves this location's countries posts. Just here for orthogonality. """

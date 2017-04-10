@@ -8,6 +8,9 @@ app = Flask(__name__)
 app.config['DEBUG'] = cfg.DEBUG
 instance = None
 
+# ----------------------------------------------
+# SQL database setup and connection
+# ----------------------------------------------
 def get_db(loc):
     path = os.path.join(cfg.DATABASE_PATH, loc + ".db")
     db = getattr(g, '_database', None)
@@ -56,15 +59,15 @@ def setup():
         if not instance == None:
             get_db(instance.connection.get_location_city())
             session['title'] = "JodelExtract: " + instance.connection.get_location_string()
-            return redirect(url_for('posts'))
+            return redirect(url_for('posts', mode='recent'))
         else:
             return redirect(url_for('index'))
 
-@app.route('/posts/', defaults={'mode': 'recent'})
 @app.route('/posts/<mode>', methods=['GET'])
 def posts(mode):
     if not instance == None:
-        post_list, last_post = instance.posts(mode=mode)
+        after_post_id = request.args.get('after')
+        post_list, last_post = instance.posts(mode=mode, after_post_id=after_post_id)
         return render_template('show_posts.html', posts=post_list, last_post=last_post)
     else:
         return redirect(url_for('index'))
@@ -78,12 +81,16 @@ def particular_post(post_id):
     else:
         return redirect(url_for('index'))
 
-@app.route('/channel/', defaults={'channel': 'Leuphana'})
-@app.route('/channel/<channel>', methods=['GET'])
-def channel_posts(channel):
+@app.route('/channel/', defaults={'channel': 'None', 'mode': 'recent'})
+@app.route('/channel/<channel>/<mode>', methods=['GET'])
+def channel(channel, mode):
     if not instance == None:
         post_list = instance._open_channel(channel=channel)
-        return render_template('show_posts.html', posts=post_list)
+        if post_list:
+            after_post_id = request.args.get('after')
+            return render_template('show_posts.html', posts=post_list, after_post_id=after_post_id)
+        else:
+            return render_template('channel_list.html', channels=instance.channel_list)
     else:
         return redirect(url_for('index'))
 
@@ -104,7 +111,7 @@ def index():
         session['title'] = "JodelExtract"
         return render_template('setup.html')
     else:
-        return redirect(url_for('posts'))
+        return redirect(url_for('posts', mode='recent'))
 
 app.secret_key = '192837465'
 

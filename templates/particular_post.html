@@ -13,7 +13,7 @@
       {% endif %}
       <div class="info">
         <span>Created at: {{ post.date }}</span>
-        <a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>
+        <!--<a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>-->
         {% if post.post.child_count > 0 %}<span> {{ post.post.child_count }} comments </span>{% endif %}
         <span>{{ post.named_distance }}</span>
       </div>

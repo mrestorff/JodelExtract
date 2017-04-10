@@ -32,7 +32,6 @@ class Post(object):
             if post['user_handle'] == "oj":
                 self.by_oj = True
                 self.replier = 0
-                print self.by_oj
             else:
                 self.replier = post['replier']
         else:
