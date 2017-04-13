@@ -1,6 +1,7 @@
 # Specific files
 ojoc.py
 *.pyc
+*.psd
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
