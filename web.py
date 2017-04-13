@@ -1,6 +1,7 @@
 import os.path
 from flask import Flask, session, request, url_for, redirect, render_template, g
 import sqlite3
+import random
 import main
 import TOOLS.Config as cfg
 
@@ -46,6 +47,21 @@ def add_header(response):
     response.headers["Expires"] = "0" # Proxies.
     return response
 
+@app.errorhandler(404)
+def page_not_found(e):
+    message = "Nomnom.. Our racoon ate the page you were looking for"
+    return render_template('error.html', error=message), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    message = "Oops! An internal error occured"
+    return render_template('error.html', error=message), 500
+
+@app.context_processor
+def random_color():
+    colorspec = ['blue', 'turquoise', 'green', 'red', 'orange', 'yellow']
+    return dict(random_color=(random.choice(colorspec)))
+
 @app.route('/setup', methods=['POST', 'GET'])
 def setup():
     global instance
@@ -58,7 +74,7 @@ def setup():
         instance = main.start(loc=location)
         if not instance == None:
             get_db(instance.connection.get_location_city())
-            session['title'] = "JodelExtract: " + instance.connection.get_location_string()
+            session['loc'] = instance.connection.get_location_string()
             return redirect(url_for('posts', mode='recent'))
         else:
             return redirect(url_for('index'))
@@ -68,7 +84,8 @@ def posts(mode):
     if not instance == None:
         after_post_id = request.args.get('after')
         post_list, last_post = instance.posts(mode=mode, after_post_id=after_post_id)
-        return render_template('show_posts.html', posts=post_list, last_post=last_post)
+        base_url = "/posts/"
+        return render_template('show_posts.html', posts=post_list, last_post=last_post, base_url=base_url, active_page=mode)
     else:
         return redirect(url_for('index'))
 
@@ -85,15 +102,17 @@ def particular_post(post_id):
 @app.route('/channel/<channel>/<mode>', methods=['GET'])
 def channel(channel, mode):
     if not instance == None:
-        post_list = instance._open_channel(channel=channel)
-        if post_list:
+        if channel in instance.channel_name_list:
             after_post_id = request.args.get('after')
-            return render_template('show_posts.html', posts=post_list, after_post_id=after_post_id)
+            post_list = instance._open_channel(channel=channel, mode=mode, after_post_id=after_post_id)
+            base_url = "/channel/" + channel + "/"
+            return render_template('show_posts.html', posts=post_list, after_post_id=after_post_id, base_url=base_url, active_page=mode)
         else:
             return render_template('channel_list.html', channels=instance.channel_list)
     else:
         return redirect(url_for('index'))
 
+# user_posts function will probably not be revived by Jodel
 @app.route('/user/<user_id>', methods=['GET'])
 def user_posts(user_id):
     if not instance == None:

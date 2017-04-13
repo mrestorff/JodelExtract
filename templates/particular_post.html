@@ -1,47 +1,99 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div id="post">
-  {% if post %}
-  <article style="background-color: {{ post.color }};">
+{% if post %}
+<section class="jodel container">
+  <div class="row">
+    <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
+      <div class="panel panel-default">
 
-    <div class="op" style="{% if comments %}border-bottom: 2px solid white; margin-bottom: 0px !important;{% endif %}">
-      <div class="vote_count"><span>{{ post.post.vote_count }}</span></div>
-      {% if post.image_url %}
-      <img src="{{ post.image_url }}" alt="{{ post.post.message }}" />
-      {% else %}
-      <p>{{ post.post.message }}</p>
-      {% endif %}
-      <div class="info">
-        <span>Created at: {{ post.date }}</span>
-        <!--<a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>-->
-        {% if post.post.child_count > 0 %}<span> {{ post.post.child_count }} comments </span>{% endif %}
-        <span>{{ post.named_distance }}</span>
+        {% include "panel-heading.html" %}
+
+        <ul id="jodel-detail" class="list-group list-unstyled {{ post.color }}">
+          <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}">
+            {% if post.image_url %}
+            <img src="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop" />
+            {% endif %}
+            <div class="row center {% if post.image_url %}image{% endif %}">
+              <div class="col-md-11 col-xs-11 message" dir="auto">{% if not post.image_url %}{{ post.post.message }}{% endif %}</div>
+              <div class="col-md-1 col-xs-2 col-sm-1 pull-right voting">
+                <div class="row">
+                  <img src="/static/images/upvote.png" class="center-block vote-up">
+                </div>
+                <div class="row">
+                  <span class="votes center-block">{{ post.post.vote_count }}</span>
+                </div>
+                <div class="row">
+                  <img src="/static/images/downvote.png" class="center-block vote-down">
+                </div>
+              </div>
+            </div>
+            <div class="row time {% if post.image_url %}image{% endif %}">
+              <div class="col-md-6 col-xs-6 time-block">
+                <img src="/static/images/time.png" class="icon time">
+                <span class="time" title="{{ post.date }}">{% if not post.system_message %}{{ post.timedelta }}{% else %}by Jodel Team{% endif %}</span>
+              </div>
+              <div class="col-md-6 col-xs-6 location-block">
+                  <span class="location string">{{ post.named_distance }}</span><span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+              </div>
+            </div>
+          </li>
+
+          {% for comment in comments %}
+          <li class="list-group-item {{ comment.color }} child {% if comment.image_url %}image{% endif %}">
+            {% if post.image_url %}
+            <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" class="post_image desktop" />
+            {% endif %}
+            <div class="row center {% if comment.image_url %}image{% endif %}">
+              <div class="col-md-11 col-xs-11 message" dir="auto">{% if not comment.image_url %}{{ comment.post.message }}{% endif %}</div>
+              <div class="col-md-1 col-xs-2 col-sm-1 pull-right voting">
+                <div class="row">
+                  <img src="/static/images/upvote.png" class="center-block vote-up">
+                </div>
+                <div class="row">
+                  <span class="votes center-block">{{ comment.post.vote_count }}</span>
+                </div>
+                <div class="row">
+                  <img src="/static/images/downvote.png" class="center-block vote-down">
+                </div>
+              </div>
+            </div>
+            <div class="row {% if comment.image_url %}image {% endif %}time">
+              <div class="col-md-6 col-xs-6 time-block">
+                <img src="/static/images/time.png" class="icon time"><span class="time" title="{{ post.date }}">{{ comment.timedelta }}</span>
+              </div>
+              {% if comment.by_oj %}
+              <div class="col-md-6 col-xs-6 oj-block">
+                  <span class="oj">OJ</span><img class="icon-oj" src="/static/images/crownIcon.png" srcset="/static/images/crownIcon@2x.png 2x">
+              </div>
+              {% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!--<div class="panel-footer">
+          <span>Newer posts</span>
+          <span class="pull-right"><a href="?after={{ last_post }}">Older posts &raquo;</a></span>
+        </div>-->
+
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="comments">
-    {% for comment in comments %}
-      <div class="comment {% if comment.post.user_handle == post.post.user_handle or comment.by_oj %}oj{% endif %}">
-        <div class="vote_count"><span>{{ comment.post.vote_count }}</span></div>
-        {% if comment.image_url %}
-        <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" />
-        {% else %}
-        <p>
-          {{ comment.post.message }}
-        </p>
-        {% endif %}
-        <div class="info">
-          <span>Created at: {{ comment.date }}</span>
-          <a href="/user/{{ comment.post.user_handle }}"><span>Author</span></a>
-          <span>{{ comment.named_distance }}</span>
+{% else %}
+
+<div class="container fluid orange">
+    <div class="panel panel-default orange">
+        <div class="panel-body">
+            <div class="row">
+                <img src="/static/images/dead_racoon.png">
+            </div>
+            <div class="row message">
+                Content no longer available
+            </div>
         </div>
-      </div>
-    {% endfor %}
     </div>
-
-  </article>
-  {% else %}
-    <em>Error</em>
-  {% endif %}
 </div>
+{% endif %}
 {% endblock %}

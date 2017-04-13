@@ -7,7 +7,6 @@ import shutil
 import pprint
 import argparse
 import sys
-import enum
 import appdirs
 import time
 import requests
@@ -85,6 +84,10 @@ class JodelExtract():
             else:
                 initial_channels = []
 
+        self.channel_name_list = []
+        for channel in self.channel_list:
+            self.channel_name_list.append(channel['channel'])
+
         if mode is not None:
             self.posts_mode = mode
 
@@ -119,7 +122,7 @@ class JodelExtract():
 
         if mode is None:
             #mode = self.posts_mode_dict[post_category_type.POSTS]
-            mode = TOOLS.Connection.PostType.COMBO
+            mode = TOOLS.Connection.PostType.ALL
 
         # Fetch posts from the API if no data is supplied
         if post_data_dict is None:
@@ -177,11 +180,32 @@ class JodelExtract():
         return temp_post_list, last_post.id
 
 
-    def _open_channel(self, channel, after_post_id=None, main=None):
+    def _open_channel(self, channel, mode=None, after_post_id=None, main=None, channel_data_dict=None):
         """ Load posts for channel or hashtag from API """
 
+        if not channel in self.channel_name_list:
+            return False
+
         # Fetch posts from the API
-        channel_data_dict = self.connection.get_channel(channel, after_post_id)
+        if mode is None:
+            #mode = self.posts_mode_dict[post_category_type.POSTS]
+            mode = TOOLS.Connection.PostType.ALL
+
+        # Fetch posts from the API if no data is supplied
+        if mode == TOOLS.Connection.PostType.POPULAR or mode == "popular":
+            channel_data_dict = self.connection.get_channel_popular(channel, after_post_id)
+        elif mode == TOOLS.Connection.PostType.DISCUSSED or mode == "discussed":
+            channel_data_dict = self.connection.get_channel_discussed(channel, after_post_id)
+        elif mode == TOOLS.Connection.PostType.COMBO or mode == "combo":
+            channel_data_dict = self.connection.get_channel(channel)
+            raw_channel_data_dict = self.connection.get_channel(channel)
+            channel_data_dict = {'posts': sorted(#raw_channel_data_dict['replied'] +
+                    #raw_channel_data_dict['voted'] +
+                    raw_channel_data_dict['recent'],key=timesort,reverse=True)}
+        elif mode == TOOLS.Connection.PostType.ALL or mode == "recent":
+            channel_data_dict = self.connection.get_channel_recent(channel, after_post_id)
+        else:
+            channel_data_dict = self.connection.get_channel_recent(channel, after_post_id)
 
         if channel_data_dict is False:
             return
@@ -192,12 +216,12 @@ class JodelExtract():
             head = channel
 
         # Check if this channel has posts, and list them if yes
-        channel_posts_list = channel_data_dict.get('recent')
+        channel_posts_list = channel_data_dict['posts']
         if channel_posts_list is not None and len(channel_posts_list) > 0:
             print "Loading channel @" + channel
             temp_post_list = []
             for post in channel_posts_list:
-                p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
+                p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection,channel=channel)
                 temp_post_list.append(p)
                 # inserting into permanent list as well
                 self.post_list[post['post_id']] = p

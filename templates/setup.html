@@ -1,9 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div class="setup">
-    <form action="/setup?kill_session=False" method="POST">
-      <input type="text" name="location" />
-      <input type="submit" name="submit" />
-    </form>
+<div class="container fluid {{ random_color }} setup">
+  <div class="row">
+    <h1>Location Selection</h1>
   </div>
+  <div class="row message">
+    <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
+      <form action="/setup?kill_session=False" method="POST" name="Submit" class="center-block {{ random_color }}">
+        <div class="location">
+          <input type="text" name="location" placeholder="e.g. Berlin, DE" class="{{ random_color }}" />
+          <input type="submit" name="submit" class="{{ random_color }}" />
+        </div>
+      </form>
+      <form action="/setup?kill_session=False" method="POST">
+        <input type="hidden" name="location" value="" />
+        <input type="submit" name="Use IP location" class="ip {{ random_color }}" value="Use IP location" />
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

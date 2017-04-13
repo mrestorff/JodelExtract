@@ -1,26 +1,71 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div id="posts">
-  {% for post in posts %}
-    <article style="background-color: {{ post.color }};">
-      <a href="/post/{{ post.id }}"><div>
-        <div class="vote_count"><span>{{ post.post.vote_count }}</span></div>
-        {% if post.image_url %}
-        <img src="{{ post.image_url }}" alt="{{ post.post.message }}" />
-        {% else %}
-        <p>{{ post.post.message }}</p>
-        {% endif %}
-        <div class="info">
-          <span>Created at: {{ post.date }}</span>
-          <!--<a href="/user/{{ post.post.user_handle }}"><span>Author</span></a>-->
-          {% if post.post.child_count %}<span> {{ post.post.child_count }} comments </span>{% endif %}
-          <span>{{ post.named_distance }}</span>
+<section class="jodel container">
+  <div class="row">
+    <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
+      <div class="panel panel-default">
+
+        {% include "panel-heading.html" %}
+
+        <ul id="jodels-list" class="list-group list-unstyled">
+          {% for post in posts %}
+          <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}">
+            {% if not post.system_message %}<a href="/post/{{ post.id }}">{% endif %}
+            {% if post.image_url %}
+            <img src="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop" />
+            {% endif %}
+            <div class="row center {% if post.image_url %}image{% endif %}">
+              <div class="col-md-11 col-xs-11 message" dir="auto">{% if not post.image_url %}{{ post.post.message }}{% else %}Hover to show{% endif %}</div>
+              {% if not post.system_message %}
+              <div class="col-md-1 col-xs-2 col-sm-1 pull-right voting">
+                <div class="row">
+                  <img src="/static/images/upvote.png" class="center-block vote-up">
+                </div>
+                <div class="row">
+                  <span class="votes center-block">{{ post.post.vote_count }}</span>
+                </div>
+                <div class="row">
+                  <img src="/static/images/downvote.png" class="center-block vote-down">
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            <div class="row time {% if post.image_url %}image{% endif %}">
+
+              {% if post.post.child_count > 0 %}
+              <div class="col-md-4 col-xs-4 time-block">
+                <img src="/static/images/time.png" class="icon time">
+                <span class="time" title="{{ post.date }}">{% if not post.system_message %}{{ post.timedelta }}{% else %}by Jodel Team{% endif %}</span>
+              </div>
+              <div class="col-md-4 col-xs-4 comment-block">
+                <img src="/static/images/chat.png" srcset="/static/images/chat@2x.png 2x" class="icon comment">
+                <span class="comment">{{ post.post.child_count }}</span>
+              </div>
+              <div class="col-md-4 col-xs-4 location-block">
+                  <span class="location string">{{ post.named_distance }}</span><span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+              </div>
+              {% else %}
+              <div class="col-md-6 col-xs-6 time-block">
+                <img src="/static/images/time.png" class="icon time">
+                <span class="time" title="{{ post.date }}">{% if not post.system_message %}{{ post.timedelta }}{% else %}by Jodel Team{% endif %}</span>
+              </div>
+              <div class="col-md-6 col-xs-6 location-block">
+                  <span class="location string">{{ post.named_distance }}</span><span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+              </div>
+              {% endif %}
+            </div>
+            {% if not post.system_message %}</a>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+
+        <div class="panel-footer">
+          <span>Newer posts</span>
+          <span class="pull-right"><a href="?after={{ last_post }}">Older posts &raquo;</a></span>
         </div>
-      </div></a>
-    </article>
-  {% else %}
-    <h3 class="error">Unbelievable. No posts here so far</h3>
-  {% endfor %}
+
+      </div>
+    </div>
   </div>
-  <a href="?after={{ last_post }}"><span class="next_posts">Older posts &raquo;<span></a>
+</section>
 {% endblock %}

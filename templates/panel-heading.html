@@ -1,0 +1,30 @@
+<div class="panel-heading">
+  <a href="/setup?kill_session=True" title="Change location">
+    <span class="location"><!--<span class="glyphicon glyphicon-map-marker town" aria-hidden="true"></span>--> {{ session.loc }}</span>
+  </a>
+
+  {% if post %}
+  <span class="share_info">
+    <a href="https://share.jodel.com/post?postId={{ post.id }}" target="_blank" title="Share via the official Jodel Website"><span>Share</span></a>
+    <!--<a href="https://share.jodel.com/post?postId={{ post.id }}" target="_blank">-->
+      <img class="share" src="{{ url_for('static', filename='images/shares.png') }}" srcset="/static/images/shares@2x.png 2x">
+    <!--</a>-->
+    <span class="pins">{{ post.post.pin_count }}</span><img src="/static/images/pins.png" />
+  </span>
+  {% else %}
+  <span class="share_info">
+    {% set navigation_bar = [
+        ('recent', 'recent', 'recent'),
+        ('popular', 'popular', 'popular'),
+        ('discussed', 'discussed', 'discussed')
+    ] -%}
+    {% set active_page = active_page|default('recent') -%}
+    {% for href, id, caption in navigation_bar %}
+      <a{% if id == active_page %} class="active"{% endif %} href="{{ base_url }}{{ href|e }}"><span>{{ caption|e }}</<span></a>
+    {% endfor %}
+    <!--<a href="{{ base_url }}recent"><span>recent</span></a>
+    <a href="{{ base_url }}popular"><span>popular</span></a>
+    <a href="{{ base_url }}discussed"><span>discussed</span></a>-->
+  </span>
+  {% endif %}
+</div>

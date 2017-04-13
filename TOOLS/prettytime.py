@@ -18,7 +18,6 @@
 import datetime as dt
 import dateutil.parser
 
-
 def pretty(timestamp):
     try:
         ts = dateutil.parser.parse(timestamp)
@@ -31,14 +30,16 @@ def pretty(timestamp):
     delta = now - ts
 
     if ((now - ts) > dt.timedelta(days=30 * 12)):
-        return str(round(delta.days / 365.0, 1)) + "Y"
+        return str(int(round(delta.days / 365.0, 1))) + " years ago"
     elif ((now - ts) > dt.timedelta(days=30)):
-        return str(round(delta.days / 30.0, 1)) + "M"
+        return str(int(round(delta.days / 30.0, 1))) + " months ago"
     elif ((now - ts) > dt.timedelta(hours=24)):
-        return str(delta.days) + "d"
+        return str(delta.days) + " days ago"
     elif ((now - ts) > dt.timedelta(minutes=59)):
-        return str(round(delta.seconds / 3600.0, 1)) + "h"
+        return str(int(round(delta.seconds / 3600.0, 1))) + " hours ago"
     elif ((now - ts) > dt.timedelta(seconds=59)):
-        return str(round(delta.seconds / 60.0, 1)) + "m"
+        return str(int(round(delta.seconds / 60, 0))) + " minutes ago"
+    elif ((now - ts) < dt.timedelta(seconds=59)) and ((now - ts) > dt.timedelta(seconds=1)):
+        return str(int(round(delta.seconds, 0))) + " seconds ago"
     else:
-        return str(delta.seconds) + "s"
+        return "less than a second ago"

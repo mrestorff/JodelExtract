@@ -4,8 +4,7 @@
 2. Enter location in the format "City, CC". If that city can't be found, your current IP-based position will be used
 3. Latest posts will be loaded, click on posts to see the comments
 4. Use links in navigation bar to list the most liked, or most discussed posts from your location
-5. Click on "Author" link in posts to show all currently loaded posts from that author
-6. Design is still work in progress
+5. Design is still work in progress
 
 # Readme Command Line #
 
@@ -22,6 +21,6 @@
 * `python-appdirs`
 * `python-shutil`
 * `python-enum34`
-* `python-urwid`
+* `python-keyring`
 * `python-dateutil`
 * `python-flask`

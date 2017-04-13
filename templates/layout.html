@@ -1,26 +1,37 @@
 <!doctype html>
 <html>
-<head>
-  <title>{{ session['title'] }}</title>
-  <link rel=stylesheet type=text/css href="/static/style.css">
-</head>
-<body>
-  <header>
-    <a href="/"><h1>{{ session['title'] }}</h1></a>
-    <nav>
-      {% if request.path != "/" %}
-      <a href="/setup?kill_session=True">Change Location</a>
-      <a href="/posts/recent">Recent</a>
-      <a href="/posts/popular">Popular</a>
-      <a href="/posts/discussed">Discussed</a>
-      <a href="/channel/">Channel List</a>
-      {% endif %}
-    </nav>
-  </header>
-  <main>
-    <section id="content">
+  <head>
+    <title>JodelExtract</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="/static/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/style_jodel.css" rel="stylesheet" type="text/css">
+    <link href="/static/style.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/png" href="/static/images/favicons/favicon-128.png" sizes="128x128"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body class="jodel {% if post %}{{ post.color }}{% else %}{{ random_color }}{% endif %}{% if error %} error{% endif %}">
+    <!--<script src="/static/js/bootstrap.min.js"></script>-->
+    <header class="{% if post %}{{ post.color }}{% else %}{{ random_color }}{% endif %}">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3 col-xs-3 logo">
+            <a href="/"><h1>JodelExtract</h1></a>
+          </div>
+          <div class="col-md-5 col-md-offset-4 col-xs-6 col-xs-offset-3 links">
+            <nav>              
+              {% if request.path != "/" %}
+              <!--<a href="/posts/recent">Recent</a>
+              <a href="/posts/popular">Popular</a>
+              <a href="/posts/discussed">Discussed</a>-->
+              <a href="/channel/">Channel List</a>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
       {% block content %}{% endblock %}
-    <section>
-  </main>
-</body>
+    </main>
+  </body>
 </html>

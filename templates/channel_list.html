@@ -1,12 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div id="channels">
-    <ul>
-    {% for channel in channels %}
-      <a href="/channel/{{ channel['channel'] }}/recent"><li>{{ channel['channel'] }} / {{ channel['followers'] }} Followers</li></a>
-    {% else %}
-      <h3 class="error">No channels available</h3>
-    {% endfor %}
-    </ul>
+<section class="jodel container">
+  <div class="row">
+    <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
+      <div class="panel panel-default">
+
+        {% include "panel-heading.html" %}
+
+        <ul class="list-group">
+        {% for channel in channels %}
+          <li class="list-group-item justify-content-between {{ random_color }}">
+            <a href="/channel/{{ channel['channel'] }}/recent">{{ channel['channel'] }} <span class="badge badge-default badge-pill">{{ channel['followers'] }}</span></a>
+          </li>
+        {% else %}
+          <h3 class="error">No channels available</h3>
+        {% endfor %}
+        </ul>
   </div>
 {% endblock %}

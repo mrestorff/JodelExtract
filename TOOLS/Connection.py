@@ -334,7 +334,7 @@ class Connection(object):
                 if len(j) == 0:
                     print "Location search returned nothing."
                     return None
-                    #break
+                    break
                 elif len(j) > 1:
                     self.print_verbose("Location search returned more results than expected. Choosing first...")
                 try:
@@ -342,7 +342,7 @@ class Connection(object):
                     lat = j[0]['lat']
                     lon = j[0]['lon']
                     self.print_verbose("Location chosen: "+j[0]['display_name']+". Coordinates: lat "+lat+" / long "+lon+"\n")
-                    return {'city': city,'country': cc,'loc_accuracy': 0,'loc_coordinates': {'lat': lat,'lng': lon}}
+                    return {'city': city.lstrip(),'country': cc.lstrip(),'loc_accuracy': 0,'loc_coordinates': {'lat': lat,'lng': lon}}
                 except KeyError:
                     msg = j.get('message')
                     if msg is not None:
@@ -350,11 +350,11 @@ class Connection(object):
                     else:
                         print "Request failed: Unkown reason (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
             else:
-                print "Request failed! "# + r.status_code + " (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
+                print "Request failed! " + r.status_code + " (" + str(_try) + "/" + str(LOCATION_RETRIES) + ")"
         return None
 
     def get_location_string(self):
-        return self.location['city'] + ',' + self.location['country']
+        return self.location['city'] + ', ' + self.location['country']
 
     def get_location_city(self):
         return self.location['city']
