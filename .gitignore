@@ -2,6 +2,9 @@
 ojoc.py
 *.pyc
 *.psd
+*.log
+tmp/
+mitmproxy/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

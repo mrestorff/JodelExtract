@@ -98,9 +98,6 @@ class JodelExtract():
         #self.my_voted_posts()
         #self.my_pinned_posts()
 
-        #if initial_channels is not None:
-        #    for initial_channel in initial_channels:
-        #        self._open_channel(self,initial_channel)
         return False
 
     def view_karma(self, widget, data):
