@@ -495,6 +495,11 @@ select:-webkit-autofill:focus {
   font-size: 16px;
   font-weight: 600;
 }
+#channels h3.error {
+  text-align: center;
+  padding: 50px;
+  margin-bottom: 20px;
+}
 
 a span.next_posts {
   color: #FF9908;
