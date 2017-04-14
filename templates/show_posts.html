@@ -9,15 +9,18 @@
 
         <ul id="jodels-list" class="list-group list-unstyled">
           {% for post in posts %}
-          <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}">
+          <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}" id="{{ post.id }}">
             {% if not post.system_message %}<a href="/post/{{ post.id }}">{% endif %}
             {% if post.image_url %}
-            <img src="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop" />
+            <img data-original="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop lazy" />
+            <noscript>
+              <img src="{{ post.image_url }}" alt="{{ post.post.message }}" class="channel-image">
+            </noscript>
             {% endif %}
             <div class="row center {% if post.image_url %}image{% endif %}">
               <div class="col-md-11 col-xs-11 message" dir="auto">{% if not post.image_url %}{{ post.post.message }}{% else %}Hover to show{% endif %}</div>
               {% if not post.system_message %}
-              <div class="col-md-1 col-xs-2 col-sm-1 pull-right voting">
+              <div class="col-md-1 col-xs-2 col-sm-1 pull-right voting unselectable" unselectable="on">
                 <div class="row">
                   <img src="/static/images/upvote.png" class="center-block vote-up">
                 </div>
@@ -30,7 +33,7 @@
               </div>
               {% endif %}
             </div>
-            <div class="row time {% if post.image_url %}image{% endif %}">
+            <div class="row time {% if post.image_url %}image{% endif %} unselectable" unselectable="on">
 
               {% if post.post.child_count > 0 %}
               <div class="col-md-4 col-xs-4 time-block">
@@ -60,8 +63,8 @@
         </ul>
 
         <div class="panel-footer">
-          <span>Newer posts</span>
-          <span class="pull-right"><a href="?after={{ last_post }}">Older posts &raquo;</a></span>
+          <span>{% if last_first_post != None %}<a href="?after={{ last_first_post }}">&laquo; Newer posts</a>{% else %}<a href="{{ base_url }}recent">&laquo; Load recent posts</a>{% endif %}</span>
+          <span class="pull-right"><a href="?before={{ first_post }}&after={{ last_post }}">Older posts &raquo;</a></span>
         </div>
 
       </div>

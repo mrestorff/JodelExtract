@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
+
 import json
 import tempfile
 from StringIO import StringIO
@@ -8,8 +11,9 @@ import pprint
 import argparse
 import sys
 import appdirs
-import time
+import datetime
 import requests
+from time import gmtime, strftime
 import TOOLS.Connection
 import TOOLS.PostHandler
 import TOOLS.Config as cfg
@@ -176,8 +180,9 @@ class JodelExtract():
                     print post[input]
                     print "#########"
 
+        first_post = temp_post_list[1]
         last_post = temp_post_list[len(temp_post_list)-1]
-        return temp_post_list, last_post.id
+        return temp_post_list, first_post.id, last_post.id
 
 
     def _open_channel(self, channel, mode=None, after_post_id=None, main=None, channel_data_dict=None):
@@ -214,18 +219,51 @@ class JodelExtract():
             head = unicode(channel,errors='replace')
         except TypeError:
             head = channel
+        # Text nach Unicode umwandeln
+        s_unicode = head.decode("iso-8859-1")
+        # Text nach UTF-8 umwandeln
+        channel_utf8 = s_unicode.encode("utf-8")
+
 
         # Check if this channel has posts, and list them if yes
         channel_posts_list = channel_data_dict['posts']
         if channel_posts_list is not None and len(channel_posts_list) > 0:
-            print "Loading channel @" + channel
             temp_post_list = []
+            # critical channel handling
+            critical_channels_utf8 = []
+            critical_channels = ['körperselfie', 'sex', 'druffkultur', 'bettgeflüster']
+            for item in critical_channels:
+                s_unicode = item.decode("iso-8859-1")
+                s_utf8 = s_unicode.encode("utf-8")
+                critical_channels_utf8.append(s_utf8)
+            if channel_utf8.lower() in critical_channels_utf8:
+                print "Loading *critical* channel @" + channel + "\nBeware of explicit content!"
+                time = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                message = {"message":"Caution! This channel may contain explicit images and/or language, or indications of drug use.",
+                "created_at":time,"updated_at":time,"pin_count":0,"color":"999999","got_thanks":"false",
+                "thanks_count":0,"child_count":0,"replier":0,"post_id":"ChannelWarningMessage999",
+                "discovered_by":0,"vote_count":0,"share_count":0,"user_handle":"oj","post_own":"team","distance":99,
+                "location":{
+                    "name":"Hamburg",
+                    "loc_coordinates":{"lat":0,"lng":0},
+                    "loc_accuracy":0,
+                    "country":"DE",
+                    "city":"Hamburg"
+                }}
+                p = TOOLS.PostHandler.Post(message,self.tempdir,self,self.connection,channel=channel)
+                temp_post_list.append(p)
+            else:
+                print "Loading channel @" + channel
+
             for post in channel_posts_list:
                 p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection,channel=channel)
                 temp_post_list.append(p)
                 # inserting into permanent list as well
                 self.post_list[post['post_id']] = p
-            return temp_post_list
+
+            first_post = temp_post_list[0]
+            last_post = temp_post_list[len(temp_post_list)-1]
+            return temp_post_list, first_post.id, last_post.id
 
 
     def _open_post(self, post_id, main=None):
@@ -238,7 +276,6 @@ class JodelExtract():
         api_version = 'v3'
 
         if api_version == 'v3':
-            this_post = this_post['details']
             # get post & answers
             if this_post is None:
                 print "Could not fetch " + post_id
@@ -246,8 +283,12 @@ class JodelExtract():
                     if post['post_id'] == post_id:
                         this_post = post
                         break
-            if this_post is None:
-                return False
+            elif this_post is False:
+                return False, post_id
+            else:
+                pass
+
+            this_post = this_post['details']
 
             # generate & update post object for original post
             temp_post_list = []
@@ -269,7 +310,7 @@ class JodelExtract():
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
                     comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
-            return comments_list
+            return comments_list, self.post_list[this_post['post_id']]
 
         else:
             # get post & answers

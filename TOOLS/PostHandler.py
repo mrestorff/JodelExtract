@@ -29,6 +29,8 @@ class Post(object):
 
         # Workaround for API not returning child_count
         if not self.reply and not 'child_count' in self.post.keys():
+            print "NO child_count FOUND IN DICT! \n"
+            print post
             self.post['child_count'] = 0
 
         # format post message (removing newlines)
@@ -109,6 +111,8 @@ class Post(object):
     def update(self, new_post):
         self.post = new_post
         self.get_data()
+        if not self.reply and not 'child_count' in self.post.keys():
+            self.post['child_count'] = 0
         return True
 
     def save_post(self):

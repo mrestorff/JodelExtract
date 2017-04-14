@@ -2,36 +2,45 @@
 <html>
   <head>
     <title>JodelExtract</title>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link href="/static/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/style_jodel.css" rel="stylesheet" type="text/css">
-    <link href="/static/style.css" rel="stylesheet" type="text/css">
-    <link rel="icon" type="image/png" href="/static/images/favicons/favicon-128.png" sizes="128x128"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <link href="/static/css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/style_jodel.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/png" href="/static/images/favicons/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   </head>
   <body class="jodel {% if post %}{{ post.color }}{% else %}{{ random_color }}{% endif %}{% if error %} error{% endif %}">
-    <!--<script src="/static/js/bootstrap.min.js"></script>-->
     <header class="{% if post %}{{ post.color }}{% else %}{{ random_color }}{% endif %}">
-      <div class="container-fluid">
+      <div class="container">
         <div class="row">
           <div class="col-md-3 col-xs-3 logo">
             <a href="/"><h1>JodelExtract</h1></a>
           </div>
-          <div class="col-md-5 col-md-offset-4 col-xs-6 col-xs-offset-3 links">
-            <nav>              
-              {% if request.path != "/" %}
-              <!--<a href="/posts/recent">Recent</a>
-              <a href="/posts/popular">Popular</a>
-              <a href="/posts/discussed">Discussed</a>-->
-              <a href="/channel/">Channel List</a>
-              {% endif %}
+            <nav class="col-md-5 col-md-offset-4 col-xs-6 col-xs-offset-3 links">
+              <ul class="nav navbar-nav navbar-right">
+                {% if request.path != "/" %}
+                <li><a href="/channel/">Channel List</a></li>
+                <li><a href="/setup?kill_session=True">Change Location</a></li>
+                {% endif %}
+              </ul>
             </nav>
-          </div>
         </div>
       </div>
     </header>
     <main>
       {% block content %}{% endblock %}
     </main>
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.lazyload.min.js"></script>
+    <script>
+    $(function() {
+      $("img.lazy").lazyload({
+          threshold : 300
+      });
+      $("img.lazy").show().lazyload();
+    });
+    </script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 import os.path
-from flask import Flask, session, request, url_for, redirect, render_template, g
+from flask import Flask, session, request, url_for, redirect, render_template, g, abort
 import sqlite3
 import random
 import main
@@ -49,12 +49,14 @@ def add_header(response):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    message = "Nomnom.. Our racoon ate the page you were looking for"
+    message = "Nomnom.. Our racoon ate the page you were looking for."
+    if message == "post_deleted":
+        message = "Nomnom.. Our racoon ate the post you were looking for."
     return render_template('error.html', error=message), 404
 
 @app.errorhandler(500)
 def internal_server_error(e):
-    message = "Oops! An internal error occured"
+    message = "Oops! An internal error occured."
     return render_template('error.html', error=message), 500
 
 @app.context_processor
@@ -83,18 +85,21 @@ def setup():
 def posts(mode):
     if not instance == None:
         after_post_id = request.args.get('after')
-        post_list, last_post = instance.posts(mode=mode, after_post_id=after_post_id)
+        last_first_post = request.args.get('before')
+        post_list, first_post, last_post = instance.posts(mode=mode, after_post_id=after_post_id)
         base_url = "/posts/"
-        return render_template('show_posts.html', posts=post_list, last_post=last_post, base_url=base_url, active_page=mode)
+        return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post, last_first_post=last_first_post, base_url=base_url, active_page=mode)
     else:
         return redirect(url_for('index'))
 
 @app.route('/post/<post_id>', methods=['GET'])
 def particular_post(post_id):
     if not instance == None:
-        comment_list = instance._open_post(post_id)
-        post_data = instance.post_list[post_id]
-        return render_template('particular_post.html', post=post_data, comments=comment_list)
+        comment_list, post_data = instance._open_post(post_id)
+        if comment_list != False:
+            return render_template('particular_post.html', post=post_data, comments=comment_list)
+        else:
+            abort(404)
     else:
         return redirect(url_for('index'))
 
@@ -104,9 +109,10 @@ def channel(channel, mode):
     if not instance == None:
         if channel in instance.channel_name_list:
             after_post_id = request.args.get('after')
-            post_list = instance._open_channel(channel=channel, mode=mode, after_post_id=after_post_id)
+            last_first_post = request.args.get('before')
+            post_list, first_post, last_post = instance._open_channel(channel=channel, mode=mode, after_post_id=after_post_id)
             base_url = "/channel/" + channel + "/"
-            return render_template('show_posts.html', posts=post_list, after_post_id=after_post_id, base_url=base_url, active_page=mode)
+            return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post, last_first_post=last_first_post, base_url=base_url, active_page=mode)
         else:
             return render_template('channel_list.html', channels=instance.channel_list)
     else:

@@ -15,7 +15,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # app version to use when not specified otherwise
-APP_VERSION  = '4.40.1'
+APP_VERSION  = '4.41.0'
 
 # General and debugging settings
 VERBOSE = True # Print to command line
@@ -89,6 +89,7 @@ APP_CONFIG={
     '4.37.5': ConfigType('NtMEkmHjcGldPDrOfjIeDRzLXOFjMdJmAIpwyFae', version_string='4.37.5', x_api_version='0.2'),
     '4.38.3': ConfigType('KZmLMUggDeMzQfqMNYFLWNyttEmQgClvlPyACVlH', version_string='4.38.3', x_api_version='0.2'),
     '4.40.1': ConfigType('XcpPpQcnfqEweoHRuOQbeGrRryHfxCoSkwpwKoxE', version_string='4.40.1', x_api_version='0.2'),
+    '4.41.0': ConfigType('hFvMqLauMtnodakokftuKETbIsVLxpqfjAXiRoih', version_string='4.41.0', x_api_version='0.2'),
     'wodel':  ConfigType('bgulhzgo9876GFKgguzTZITFGMn879087vbgGFuz', x_client_type='wodel_1.1', user_agent_string ='Jodel/1.1 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)', x_api_version='0.2', client_id=WODEL_CLIENT_ID)
 };
 
