@@ -17,8 +17,8 @@
   <span class="share_info overview">
     {% set navigation_bar = [
         ('recent', 'recent', 'recent'),
-        ('popular', 'popular', 'popular'),
-        ('discussed', 'discussed', 'discussed')
+        ('discussed', 'discussed', 'discussed'),
+        ('popular', 'popular', 'popular')
     ] -%}
     {% set active_page = active_page|default('recent') -%}
     {% for href, id, caption in navigation_bar %}

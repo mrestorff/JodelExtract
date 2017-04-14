@@ -9,7 +9,7 @@
 
         <ul class="list-group" id="channels">
         {% for channel in channels %}
-          <li class="{{ random_color }}">
+          <li class="{{ random_col() }}{% if not channel['image_url'] %} no-image{% endif %}">
             <a href="/channel/{{ channel['channel'] }}/recent">
               <div class="square-content">
                 {% if channel['image_url'] %}

@@ -51,8 +51,6 @@ def add_header(response):
 @app.errorhandler(404)
 def page_not_found(e):
     message = "Nomnom.. Our racoon ate the page you were looking for."
-    if message == "post_deleted":
-        message = "Nomnom.. Our racoon ate the post you were looking for."
     return render_template('error.html', error=message), 404
 
 @app.errorhandler(500)
@@ -63,7 +61,9 @@ def internal_server_error(e):
 @app.context_processor
 def random_color():
     colorspec = ['blue', 'turquoise', 'green', 'red', 'orange', 'yellow']
-    return dict(random_color=(random.choice(colorspec)))
+    def random_col():
+        return random.choice(colorspec)
+    return dict(random_color=random_col(), random_col=random_col)
 
 @app.route('/setup', methods=['POST', 'GET'])
 def setup():

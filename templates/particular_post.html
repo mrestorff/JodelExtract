@@ -87,6 +87,7 @@
         </ul>
 
         {% if post.post.child_count > 10 %}
+        <!-- TODO: Pagination for comments -->
         <div class="panel-footer">
           <span><a href="#top">To the Top</a></span>
           <span><a href="#{{ comments[post.post.child_count-1].id }}">Scroll to last comment</a></span>

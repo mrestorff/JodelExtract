@@ -8,7 +8,17 @@
     <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
       <form action="/setup?kill_session=False" method="POST" name="Submit" class="center-block {{ random_color }}">
         <div class="location">
-          <input type="text" name="location" placeholder="e.g. Hamburg, DE" class="{{ random_color }}" />
+          <input type="text" name="location" list="location" placeholder="e.g. Hamburg, DE" class="{{ random_color }}" />
+          <datalist id="location">
+            <option value="Hamburg, DE" />
+            <option value="Berlin, DE" />
+            <option value="Münster, DE" />
+            <option value="Tübingen, DE" />
+            <option value="München, DE" />
+            <option value="Kiel, DE" />
+            <option value="Aachen, DE" />
+            <option value="Lüneburg, DE" />
+          </datalist>
           <input type="submit" name="submit" class="{{ random_color }}" />
         </div>
       </form>

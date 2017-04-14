@@ -119,6 +119,7 @@ main {
   width: 70%;
   float: left;
   font-weight: 600;
+  color: #666;
 }
 .setup .location input[type=submit] {
   width: 29%;
@@ -143,10 +144,6 @@ main {
 :-moz-placeholder { /* Firefox 18- */
   color: #bbb !important;
   font-weight: normal;
-}
-.setup input:focus {
-  background-color: #fff;
-  color: #666;
 }
 .setup input[type=submit] {
   cursor: pointer;
@@ -448,7 +445,7 @@ select:-webkit-autofill:focus {
   float: left;
   transition: all 0.2s;
 }
-#channels li:hover {
+#channels li.no-image:hover .square-content {
   background-color: rgba(255, 255, 255, 0.3);
 }
 #channels li:hover img {
