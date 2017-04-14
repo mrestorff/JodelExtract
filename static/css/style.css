@@ -495,9 +495,12 @@ select:-webkit-autofill:focus {
   font-size: 16px;
   font-weight: 600;
 }
-#channels h3.error {
+#channels .error {
   text-align: center;
   padding: 50px;
+  margin-bottom: 20px;
+}
+#channels .error h2 {
   margin-bottom: 20px;
 }
 

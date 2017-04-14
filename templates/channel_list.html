@@ -31,7 +31,13 @@
             </a>
           </li>
         {% else %}
-          <h3 class="error">No channels available</h3>
+        <div class="error">
+          <h2>No channels available</h2>
+          <p>
+            In some cities the channel function is not working yet.<br />
+            <a href="/setup?kill_session=True">Try a different location!</a>
+          </p>
+        </div>
         {% endfor %}
         </ul>
   </div>
