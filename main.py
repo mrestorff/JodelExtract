@@ -160,11 +160,12 @@ class JodelExtract():
                         p = self.post_list[post['post_id']]
                         # update post object
                         p.update(post)
-                        temp_post_list.append(p)
                     else:
                         p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
-                        temp_post_list.append(p)
                         self.post_list[post['post_id']] = p
+                    # delete system messages
+                    if not p.system_message:
+                        temp_post_list.append(p)
                 #except:
                 #    print post_data_dict
 
@@ -180,7 +181,8 @@ class JodelExtract():
                     print post[input]
                     print "#########"
 
-        first_post = temp_post_list[1]
+
+        first_post = temp_post_list[0]
         last_post = temp_post_list[len(temp_post_list)-1]
         return temp_post_list, first_post.id, last_post.id
 

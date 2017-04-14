@@ -118,7 +118,7 @@ main {
   background-color: #fff;
   width: 70%;
   float: left;
-  font-weight: bold;
+  font-weight: 600;
 }
 .setup .location input[type=submit] {
   width: 29%;
@@ -202,6 +202,18 @@ select:-webkit-autofill:focus {
   padding-left: 20px;
   font-weight: 700;
   font-size: 16px;
+}
+.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .channel a:hover {
+  text-decoration: none;
+}
+.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .channel {
+  text-transform: capitalize;
+  background: none;
+  font-weight: 700;
+  font-size: 16px;
+}
+.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .channel:before {
+  content: '\0040'
 }
 /*.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .town {
   font-size: 16px;
@@ -354,7 +366,7 @@ select:-webkit-autofill:focus {
   line-height: 17px;
   opacity: 0.65;
   text-align: center;
-  font-weight: bold;
+  font-weight: 600;
 }
 .list-group-item .row .voting .vote-up {
   margin-top: 0;

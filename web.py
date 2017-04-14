@@ -88,16 +88,18 @@ def posts(mode):
         last_first_post = request.args.get('before')
         post_list, first_post, last_post = instance.posts(mode=mode, after_post_id=after_post_id)
         base_url = "/posts/"
-        return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post, last_first_post=last_first_post, base_url=base_url, active_page=mode)
+        return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post,
+        last_first_post=last_first_post, base_url=base_url, active_page=mode)
     else:
         return redirect(url_for('index'))
 
 @app.route('/post/<post_id>', methods=['GET'])
 def particular_post(post_id):
     if not instance == None:
+        channel = request.args.get('channel')
         comment_list, post_data = instance._open_post(post_id)
         if comment_list != False:
-            return render_template('particular_post.html', post=post_data, comments=comment_list)
+            return render_template('particular_post.html', post=post_data, comments=comment_list, channel=channel)
         else:
             abort(404)
     else:
@@ -112,7 +114,8 @@ def channel(channel, mode):
             last_first_post = request.args.get('before')
             post_list, first_post, last_post = instance._open_channel(channel=channel, mode=mode, after_post_id=after_post_id)
             base_url = "/channel/" + channel + "/"
-            return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post, last_first_post=last_first_post, base_url=base_url, active_page=mode)
+            return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post,
+            last_first_post=last_first_post, base_url=base_url, active_page=mode, channel=channel)
         else:
             return render_template('channel_list.html', channels=instance.channel_list)
     else:
