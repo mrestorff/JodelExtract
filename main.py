@@ -42,9 +42,6 @@ class JodelExtract():
         self.posts_mode_dict = {}
         self.post_list = {}
 
-        #for post_category in post_category_type:
-        #    self.posts_mode_dict[post_category] = TOOLS.Connection.PostType.COMBO
-
         # POST MODE SETTINGS
         self.my_posts_mode = TOOLS.Connection.PostType.COMBO
         self.posts_mode = TOOLS.Connection.PostType.COMBO
@@ -149,7 +146,6 @@ class JodelExtract():
 
         self.post_data_dict = post_data_dict
 
-        #print "Post count: " + len(post_data_dict['posts'])
         if post_data_dict:
             debug = False
             temp_post_list = []
@@ -166,8 +162,6 @@ class JodelExtract():
                     # delete system messages
                     if not p.system_message:
                         temp_post_list.append(p)
-                #except:
-                #    print post_data_dict
 
             if debug == True:
                 post = post_data_dict['posts'][0]
@@ -221,9 +215,7 @@ class JodelExtract():
             head = unicode(channel,errors='replace')
         except TypeError:
             head = channel
-        # Text nach Unicode umwandeln
         s_unicode = head.decode("iso-8859-1")
-        # Text nach UTF-8 umwandeln
         channel_utf8 = s_unicode.encode("utf-8")
 
 
