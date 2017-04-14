@@ -1,6 +1,7 @@
 # Specific files
 ojoc.py
 *.pyc
+TOOLS/*.pyc
 *.psd
 *.log
 tmp/
