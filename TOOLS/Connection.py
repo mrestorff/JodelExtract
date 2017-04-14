@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # Modified Jodel Server connection methods by Malte Restorff
 # Original Copyright (C) 2016 by Christian Fibich
 # # # # # # # # #

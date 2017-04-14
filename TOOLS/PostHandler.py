@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import re
 import requests
 import os.path

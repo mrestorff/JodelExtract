@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import os.path
 from flask import Flask, session, request, url_for, redirect, render_template, g, abort
 import sqlite3
