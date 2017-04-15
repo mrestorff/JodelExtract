@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="jodel container">
+  <div class="row">
+    <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
+      <div class="panel panel-default {{ random_color }}">
+
+        {% include "panel-heading.html" %}
+
+        <ul class="list-group" id="channels">
+        {% for channel in channels %}
+          <li class="{{ random_col() }}{% if not channel['image_url'] %} no-image{% endif %}"
+           title="{{ channel['channel'] }}: {{ channel['followers'] }} local followers / {{ channel['country_followers'] }} national followers">
+            <a href="/channel/{{ channel['channel'] }}/recent">
+              <div class="square-content">
+                {% if channel['image_url'] %}
+                <img data-original="{{ channel['image_url'] }}" class="channel-image lazy" />
+                <noscript>
+                  <img src="{ channel['image_url'] }}" class="channel-image">
+                </noscript>
+                {% endif %}
+                <div class="row">
+                  <span class="badge badge-default badge-pill">{{ channel['followers'] }}</span>
+                  <br><span class="title">{{ channel['channel'] }}</span>
+                </div>
+              </div>
+            </a>
+          </li>
+        {% else %}
+        <div class="error-message">
+          <h2>No channels available</h2>
+          <p>
+            In some cities the channel function is not working yet.<br />
+            <a href="/setup?kill_session=True">Try a different location!</a>
+          </p>
+        </div>
+        {% endfor %}
+        </ul>
+  </div>
+{% endblock %}
