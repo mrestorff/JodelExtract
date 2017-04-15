@@ -53,7 +53,13 @@
                 <span class="time" title="{{ post.date }}">{% if not post.system_message %}{{ post.timedelta }}{% else %}by Jodel Team{% endif %}</span>
               </div>
               <div class="col-md-6 col-xs-6 location-block">
-                  <span class="location string">{{ post.named_distance }}</span><span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+                  {% if post.from_home %}
+                  <span class="location string">Home</span>
+                  <span class="glyphicon glyphicon-home town location" aria-hidden="true"></span>
+                  {% else %}
+                  <span class="location string">{{ post.named_distance }}</span>
+                  <span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+                  {% endif %}
               </div>
               {% endif %}
             </div>

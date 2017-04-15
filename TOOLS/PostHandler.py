@@ -43,6 +43,11 @@ class Post(object):
         else:
             self.system_message = False
 
+        if not post.get('from_home') == None:
+            self.from_home = True
+        else:
+            self.from_home = False
+
         if reply:
             print_verbose("Handling comment " + post['post_id'])
             if post['user_handle'].lower() == "oj":

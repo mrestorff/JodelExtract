@@ -34,6 +34,7 @@ import keyring
 import requests
 import warnings
 import functools
+import webbrowser
 import TOOLS.Config
 import TOOLS.GeoIP
 import TOOLS.Config as cfg
@@ -253,6 +254,7 @@ class Connection(object):
         self.print_verbose("\n User Config from API: "+str(self.jodel_config)+"\n")
 
         # Captcha Verification [not working]
+        # TODO: Activate Captcha Verification
         #if self.jodel_config['verified'] is False:
         #    print "Captcha verification necessary."
         #    self.verify_captcha()
@@ -264,7 +266,7 @@ class Connection(object):
         if pos is None or pos is False:
             raise ValueError("Connection Failed")
 
-    def verify_captcha(self): # not working
+    def verify_captcha(self):
         captcha  = self.get_captcha()
         prompt = 'Open\n\n\t'+captcha['image_url']+'\n\nin a browser and enter the images of the racoons (left to right, starting with 0) separated with spaces.'
         possible_solution = None
@@ -281,7 +283,6 @@ class Connection(object):
                     return
                 else:
                     print "Name matching verification failed"
-
         # then try matching the image using MD5 sum
         captcha_reply = requests.get(captcha['image_url'])
         if (captcha_reply.ok):
@@ -302,6 +303,8 @@ class Connection(object):
         ok = False
 
         while ok is not True:
+            # FIXME: Introduce captcha function with UI after choosing location
+            webbrowser.open(captcha['image_url'], new=2)
             rv = raw_input(prompt+'\n> ')
             try:
                solution = [int(i,10) for i in rv.split(' ')]

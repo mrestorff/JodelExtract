@@ -2,10 +2,12 @@
 {% block content %}
 <div class="container fluid {{ random_color }} setup">
   <div class="row">
-    <h1>Location Selection</h1>
+    <div class="col-md-12 col-xs-12">
+      <h1>Location Selection</h1>
+    </div>
   </div>
   <div class="row message">
-    <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
+    <div class="col-md-6 col-sm-8 col-xs-12 col-md-offset-3 col-sm-offset-2">
       <form action="/setup?kill_session=False" method="POST" name="Submit" class="center-block {{ random_color }}">
         <div class="location">
           <input type="text" name="location" list="location" placeholder="e.g. Hamburg, DE" class="{{ random_color }}" />

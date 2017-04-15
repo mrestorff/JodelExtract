@@ -15,15 +15,19 @@
   </span>
   {% elif request.path != "/channel/" %}
   <span class="share_info overview">
-    {% set navigation_bar = [
-        ('recent', 'recent', 'recent'),
-        ('discussed', 'discussed', 'discussed'),
-        ('popular', 'popular', 'popular')
-    ] -%}
-    {% set active_page = active_page|default('recent') -%}
-    {% for href, id, caption in navigation_bar %}
-      <a{% if id == active_page %} class="active"{% endif %} href="{{ base_url }}{{ href|e }}"><span>{{ caption|e }}</<span></a>
-    {% endfor %}
+    <ul class="nav navbar-nav navbar-right">
+      {% set navigation_bar = [
+          ('recent', 'recent', 'recent'),
+          ('discussed', 'discussed', 'discussed'),
+          ('popular', 'popular', 'popular')
+      ] -%}
+      {% set active_page = active_page|default('recent') -%}
+      {% for href, id, caption in navigation_bar %}
+        <li>
+          <a{% if id == active_page %} class="active"{% endif %} href="{{ base_url }}{{ href|e }}">{{ caption|e }}</a>
+        </li>
+      {% endfor %}
+    </ul>
   </span>
   {% else %}
   {% endif %}

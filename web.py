@@ -149,6 +149,6 @@ app.secret_key = '192837465'
 if __name__ == "__main__":
     port = 5000# + random.randint(0, 999)
     url = "http://127.0.0.1:{0}".format(port)
-    threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
+    #threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
     print cfg.SPLASH_TEXT
     app.run(port=port, debug=False)

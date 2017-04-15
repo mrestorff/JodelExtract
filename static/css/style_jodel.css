@@ -9,9 +9,27 @@
   align-self: center;
 }
 
+@media (max-width: 480px) {
+  .panel-heading ul.nav > li > a {
+    padding: 0 8px;
+  }
+  header {
+    padding-bottom: 0;
+  }
+}
 @media (max-width: 728px) {
   .container.setup {
     border-radius: 0 !important;
+    margin-top: 0;
+  }
+  .container.setup input {
+    font-size: 1.6em;
+    width: 100%;
+  }
+  .container.setup .location input[type=submit] {
+    float: left;
+    margin-top: 4px;
+    width: 100%;
   }
   .jodel-navbar {
     display: none;
@@ -31,15 +49,13 @@
     margin-left: 0;
     padding: 0;
   }
-  .jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+  .panel {
+    border-radius: 0;
     height: 100%;
     margin-bottom: 0;
   }
-  .jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+  .panel-heading {
+    border-radius: 0 !important;
     padding-left: 15px;
     padding-right: 15px;
   }
@@ -56,6 +72,17 @@
     font-size: 16px;
     padding-left: 15px;
     text-align: initial;
+  }
+  .list-group-item .row.image .message {
+    opacity: 0;
+  }
+  .list-group-item img.post_image {
+    -webkit-filter: blur(0);
+    -moz-filter: blur(0);
+  	filter: blur(0);
+    -moz-transform: scale(1);
+    -webkit-transform: scale(1);
+    transform: scale(1);
   }
   .list-group-item .row .time-block {
     padding-left: 15px;
@@ -94,7 +121,6 @@
     border-bottom-right-radius: 3px;
     display: inline-block;
     cursor: pointer;
-    font-family: "GothamBold";
     font-size: 16px;
     color: #595959;
     text-decoration: none;

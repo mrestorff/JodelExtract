@@ -24,9 +24,6 @@ body {
   color: #fff;
   -webkit-font-smoothing: antialiased;
 }
-header, main {
-  min-width: 480px;
-}
 a {
   transition: all 0.3s;
 }
@@ -63,16 +60,15 @@ header {
   padding: 15px;
   color: #ffffff;
 }
-header .col-md-3.col-xs-3.logo h1 {
+header .logo h1 {
   margin: 0;
-}
-header .col-md-5.col-md-offset-4.col-xs-6.col-xs-offset-3.links {
-  text-align: right;
-  font-size: 16px;
 }
 
 /* Nav */
-.nav>li>a {
+header nav {
+  font-size: 16px;
+}
+header.nav>li>a {
   text-transform: uppercase;
 }
 @media (min-width: 768px) {
@@ -80,10 +76,12 @@ header .col-md-5.col-md-offset-4.col-xs-6.col-xs-offset-3.links {
     padding: 10px;
   }
 }
+ul.navbar-nav > li {
+  float: left !important;
+}
 .nav>li>a:focus, .nav>li>a:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }
-
 main {
   padding: 50px 0;
 }
@@ -91,10 +89,8 @@ main {
 /* --------------- Setup Page --------------- */
 .container.setup {
   margin-top: 70px;
-  margin-bottom: 150px;
   border-radius: 4px;
   box-shadow: 0 1px 3px 1px rgba(0,0,0,0.05);
-  min-width: 615px;
 }
 .container.setup > .row {
   text-align: center;
@@ -171,7 +167,7 @@ select:-webkit-autofill:focus {
 }
 
 /* --------------- Post items --------------- */
-.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default {
+/*.jodel.container > .row > .col-md-6.col-xs-8 > */.panel/*.panel-default*/ {
   border: none;
   margin-bottom: 0;
   border-radius: 4px;
@@ -223,9 +219,18 @@ select:-webkit-autofill:focus {
 .jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .share_info.overview {
   font-size: 14px;
 }
-.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .share_info span {
+.jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .share_info.post span {
   margin-left: 15px;
   padding-right: 5px;
+}
+.panel-heading .nav > li > a {
+  display: inline;
+}
+.panel-heading .navbar-nav {
+  margin: 0;
+}
+.panel-heading .nav>li>a:focus, .panel-heading .nav>li>a:hover {
+  text-decoration: underline;
 }
 .jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading img, .jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-footer img {
   height: 20px;
@@ -378,6 +383,9 @@ select:-webkit-autofill:focus {
 #jodel-detail .list-group-item .row.time {
   cursor: default;
 }
+.list-group-item .row.time {
+  opacity: 0.7;
+}
 .list-group-item .row .time-block {
   padding-left: 25px;
   padding-right: 15px;
@@ -390,7 +398,6 @@ select:-webkit-autofill:focus {
   vertical-align: bottom;
 }
 .list-group-item .row .time-block, .list-group-item .row .location-block, .list-group-item .row .comment-block {
-  opacity: 0.6;
   font-size: 11px; /* orig: 9.5px */
 }
 .list-group-item .row .comment-block {
@@ -428,8 +435,8 @@ select:-webkit-autofill:focus {
   padding-right: 25px;
   padding-top: 10px;
 }
-.list-group-item .row .location-block .glyphicon-map-marker.location {
-  margin-left: 5px;
+.list-group-item .row .location-block .glyphicon.location {
+  margin-left: 4px;
   opacity: 0.8;
   top: 2px;
   font-size: 13px;
@@ -448,24 +455,6 @@ select:-webkit-autofill:focus {
 #channels li.no-image:hover .square-content {
   background-color: rgba(255, 255, 255, 0.3);
 }
-#channels li:hover img {
-  -webkit-filter: blur(5px) brightness(90%);
-  -moz-filter: blur(5px) brightness(90%);
-	filter: blur(5px) brightness(90%);
-  transition: all 0.2s;
-}
-#channels li:before{
-    content: "";
-    display: block;
-    padding-top: 100%;
-}
-#channels .square-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-}
 #channels li img {
   -webkit-filter: blur(5px) brightness(60%);
   -moz-filter: blur(5px) brightness(60%);
@@ -475,6 +464,24 @@ select:-webkit-autofill:focus {
   position: absolute;
   left: -5%;
   display: block;
+}
+#channels li:hover img {
+  -webkit-filter: blur(5px) brightness(90%);
+  -moz-filter: blur(5px) brightness(90%);
+	filter: blur(5px) brightness(90%);
+  transition: all 0.2s;
+}
+#channels li:before{
+    content: "";
+    display: block;
+    padding-top: 90%/*100%*/;
+}
+#channels .square-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 #channels .square-content .row {
    z-index: 2;
