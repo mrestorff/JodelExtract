@@ -14,6 +14,7 @@ instance = None
 
 # ----------------------------------------------
 # SQL database setup and connection
+# TODO: Set up SQL database
 # ----------------------------------------------
 def get_db(loc):
     path = os.path.join(cfg.DATABASE_PATH, loc + ".db")
@@ -61,11 +62,15 @@ def internal_server_error(e):
     return render_template('error.html', error=message), 500
 
 @app.context_processor
-def random_color():
-    colorspec = ['blue', 'turquoise', 'green', 'red', 'orange', 'yellow']
+def remote_functions():
     def random_col():
+        colorspec = ['blue', 'turquoise', 'green', 'red', 'orange', 'yellow']
         return random.choice(colorspec)
-    return dict(random_color=random_col(), random_col=random_col)
+    def vote(post_id, value): # 1=up; 0=down
+        instance._vote(post_id, value)
+    def pin(post_id, value): # 1=pin; 0=unpin
+        instance._pin(post_id, value)
+    return dict(random_color=random_col(), random_col=random_col, vote=vote(), pin=pin())
 
 @app.route('/setup', methods=['POST', 'GET'])
 def setup():
@@ -149,6 +154,6 @@ app.secret_key = '192837465'
 if __name__ == "__main__":
     port = 5000# + random.randint(0, 999)
     url = "http://127.0.0.1:{0}".format(port)
-    #threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
+    threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
     print cfg.SPLASH_TEXT
     app.run(port=port, debug=False)

@@ -132,7 +132,7 @@ class APIMethodsType:
     get_country_posts     = APIMethod(method='GET', url='feed/country/', country=True)
     #get_post              = APIMethod(method='GET', url='posts/', postid=True)
     get_post              = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details?details=true&reversed=false') #new
-    get_share_url         = APIMethod(method='POST', url='posts/', postid=True, version='v3', postfix='share') #new
+    share                 = APIMethod(method='POST', url='posts/', postid=True, version='v3', postfix='share/') #new
     get_my_posts          = APIMethod(method='GET', url='posts/mine/')
     get_my_replies        = APIMethod(method='GET', url='posts/mine/replies/')
     get_my_votes          = APIMethod(method='GET', url='posts/mine/votes/')
@@ -410,7 +410,6 @@ class Connection(object):
             cfg = self.register()
             # create file
         else:
-            # TODO refresh access token
             # update file
             cfg = self.register()
 
@@ -642,7 +641,7 @@ class Connection(object):
 
     def country_feed(self):
         """ Retrieves this location's countries posts. Just here for orthogonality. """
-        # FIXME check if this works => doesn't work with these parameters
+        # NOTE: check if this works => doesn't work with these parameters
         return self._api_request(TOOLS.Connection.APIMethodsType.get_country_posts,country=self.location['country'])
 
     def delete_post(self, postid):
@@ -653,6 +652,10 @@ class Connection(object):
         """ Retrieves a single post and its replies, returned as dict in the same form as
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_post,postid=postid)
+
+    def share(self, postid): # TODO: Implement share function in GUI
+        """ Share the post with the given postid """
+        return self._api_request(OJOC.Connection.APIMethodsType.share, postid=postid)
 
     def upvote(self, postid):
         """ Upvote the post with the given postid """

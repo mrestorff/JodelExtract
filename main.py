@@ -111,7 +111,7 @@ class JodelExtract():
 
 
 # ----------------------------------------------------------------------
-# Methods for updating posts
+# Methods for posts
 # ----------------------------------------------------------------------
 
     def posts(self, mode=None, after_post_id=None, post_data_dict=None):
@@ -363,6 +363,31 @@ class JodelExtract():
         else:
             return None
 
+    #------------------------------------------------------------
+    # User Interactions
+    #------------------------------------------------------------
+    def _share(self, post_id):
+        share = self.connection.share(post_id)
+        if share is not None and share is not False and share.get('url'):
+            return share.get('url')
+        else:
+            return False
+
+    def _vote(self, post_id, value):
+        if value == 1:
+            re = self.connection.upvote(post_id)
+        else:
+            re = self.connection.downvote(post_id)
+        if re is not None:
+            print "Voted " + post_id
+
+    def _vote(self, post_id, value):
+        if value == 1:
+            re = self.connection.pin(post_id)
+        else:
+            re = self.connection.unpin(post_id)
+        if re is not None:
+            print "Pinned " + post_id
 
 def start(loc, mode=None, channels=None):
     if loc is not '':
@@ -378,7 +403,7 @@ def start(loc, mode=None, channels=None):
 if __name__ == '__main__':
     # The main routine
 
-    print TOOLS.Config.SPLASH_TEXT
+    print cfg.SPLASH_TEXT
 
     loc = raw_input("Please specify the location (format: City, CC) >> ")
 
