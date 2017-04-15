@@ -9,7 +9,8 @@
 
         <ul class="list-group" id="channels">
         {% for channel in channels %}
-          <li class="{{ random_col() }}{% if not channel['image_url'] %} no-image{% endif %}">
+          <li class="{{ random_col() }}{% if not channel['image_url'] %} no-image{% endif %}"
+           title="{{ channel['channel'] }}: {{ channel['followers'] }} local followers / {{ channel['country_followers'] }} national followers">
             <a href="/channel/{{ channel['channel'] }}/recent">
               <div class="square-content">
                 {% if channel['image_url'] %}
@@ -17,11 +18,6 @@
                 <noscript>
                   <img src="{ channel['image_url'] }}" class="channel-image">
                 </noscript>
-                {% else %}
-                <!--<img data-original="" class="channel-image lazy" />
-                <noscript>
-                  <img src="" class="channel-image">
-                </noscript>-->
                 {% endif %}
                 <div class="row">
                   <span class="badge badge-default badge-pill">{{ channel['followers'] }}</span>
@@ -31,7 +27,7 @@
             </a>
           </li>
         {% else %}
-        <div class="error">
+        <div class="error-message">
           <h2>No channels available</h2>
           <p>
             In some cities the channel function is not working yet.<br />

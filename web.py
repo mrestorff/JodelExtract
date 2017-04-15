@@ -3,6 +3,8 @@ import os.path
 from flask import Flask, session, request, url_for, redirect, render_template, g, abort
 import sqlite3
 import random
+import threading
+import webbrowser
 import main
 import TOOLS.Config as cfg
 
@@ -122,7 +124,7 @@ def channel(channel, mode):
     else:
         return redirect(url_for('index'))
 
-# user_posts function will probably not be revived by Jodel
+# TODO: check if function still feasable (API v3)
 @app.route('/user/<user_id>', methods=['GET'])
 def user_posts(user_id):
     if not instance == None:
@@ -145,4 +147,8 @@ def index():
 app.secret_key = '192837465'
 
 if __name__ == "__main__":
-    app.run()
+    port = 5000# + random.randint(0, 999)
+    url = "http://127.0.0.1:{0}".format(port)
+    threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
+    print cfg.SPLASH_TEXT
+    app.run(port=port, debug=False)

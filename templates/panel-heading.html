@@ -2,9 +2,9 @@
   {% if channel %}
   <a href="/channel/{{ channel }}/recent"<span class="channel">{{ channel }}</span></a>
   {% else %}
-  <a href="http://maps.google.com/?q={{ session.loc }}" title="Show on Google Maps" target="_blank">
+  <!--<a href="http://maps.google.com/?q={{ session.loc }}" title="Show on Google Maps" target="_blank">-->
     <span class="location"><!--<span class="glyphicon glyphicon-map-marker town" aria-hidden="true"></span>--> {{ session.loc }}</span>
-  </a>
+  <!--</a>-->
   {% endif %}
 
   {% if post %}

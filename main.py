@@ -41,6 +41,7 @@ class JodelExtract():
 
         self.posts_mode_dict = {}
         self.post_list = {}
+        self.error_message = None
 
         # POST MODE SETTINGS
         self.my_posts_mode = TOOLS.Connection.PostType.COMBO
@@ -135,6 +136,9 @@ class JodelExtract():
                         raw_post_data_dict['recent'],key=timesort,reverse=True)}
             elif mode == TOOLS.Connection.PostType.ALL or mode == "recent":
                 post_data_dict = self.connection.recent_posts(after_post_id)
+            elif mode == "country": # TODO implement or delete function
+                post_data_dict = self.connection.country_feed()
+                print post_data_dict
             else:
                 post_data_dict = self.connection.recent_posts(after_post_id)
 
@@ -147,11 +151,9 @@ class JodelExtract():
             debug = False
             temp_post_list = []
             if debug == False:
-                #try:
                 for post in post_data_dict['posts']:
                     if post['post_id'] in self.post_list:
                         p = self.post_list[post['post_id']]
-                        # update post object
                         p.update(post)
                     else:
                         p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
@@ -159,6 +161,8 @@ class JodelExtract():
                     # delete system messages
                     if not p.system_message:
                         temp_post_list.append(p)
+        else:
+            return [], post_data_dict, False
 
             if debug == True:
                 post = post_data_dict['posts'][0]
@@ -184,9 +188,7 @@ class JodelExtract():
         if not channel in self.channel_name_list:
             return False
 
-        # Fetch posts from the API
         if mode is None:
-            #mode = self.posts_mode_dict[post_category_type.POSTS]
             mode = TOOLS.Connection.PostType.ALL
 
         # Fetch posts from the API if no data is supplied
@@ -267,7 +269,6 @@ class JodelExtract():
         api_version = 'v3'
 
         if api_version == 'v3':
-            # get post & answers
             if this_post is None:
                 print "Could not fetch " + post_id
                 for post in self.post_data_dict['posts']:

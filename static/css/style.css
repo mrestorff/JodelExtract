@@ -492,13 +492,20 @@ select:-webkit-autofill:focus {
   font-size: 16px;
   font-weight: 600;
 }
-#channels .error {
+.error-message {
   text-align: center;
   padding: 50px;
   margin-bottom: 20px;
+  font-size: 16px;
 }
-#channels .error h2 {
+.error-message h2 {
   margin-bottom: 20px;
+}
+.error-message a {
+  line-height: 40px;
+}
+.error-message a:hover {
+  text-decoration: underline !important;
 }
 
 a span.next_posts {

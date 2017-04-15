@@ -33,6 +33,9 @@ SPLASH_TEXT="""
     ###########################################
     ####      Welcome to JodelExtract!     ####
     ###########################################
+
+     ...opening web browser automatically...
+
 """
 
 class ConfigType():

@@ -37,6 +37,7 @@ import functools
 import TOOLS.Config
 import TOOLS.GeoIP
 import TOOLS.Config as cfg
+import main
 
 
 CFG_DIR = ".jodel"
@@ -478,6 +479,7 @@ class Connection(object):
         return self._api_request(TOOLS.Connection.APIMethodsType.get_karma)
 
     def my_posts(self):
+        # TODO update list on my_posts() return parameters
         """
         Retrieve a list of the client uid's posts.
         The list is embedded in a dict as follows:
@@ -537,7 +539,6 @@ class Connection(object):
         """ Sends Captcha response for account verification """
         return self._api_request(TOOLS.Connection.APIMethodsType.post_captcha,payload={'key':key, 'answer':answer})
 
-
     def my_pinned_posts(self):
         """ Retrieves the posts this client_uid pinned, returned as dict in the same form as
         by my_posts()"""
@@ -564,26 +565,26 @@ class Connection(object):
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
 
-    @deprecated
+    @deprecated # NOTE This can be deleted, merge with new functions complete
     def recent_posts_old(self):
         """ Retrieves this location's most recent posts, returned as dict in the same form as
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_posts)
 
-    @deprecated
+    @deprecated # NOTE This can be deleted, merge with new functions complete
     def popular_posts_old(self):
         """ Retrieves this location's most upvoted posts, returned as dict in the same form as
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_popular)
 
-    @deprecated
+    @deprecated # NOTE This can be deleted, merge with new functions complete
     def discussed_posts_old(self):
         """ Retrieves this location's most commented posts, returned as dict in the same form as
         by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed)
 
     # CHANNEL METHODS #
-    @deprecated
+    @deprecated # NOTE This can be deleted, merge with new functions complete
     def get_channel_old(self,channel):
         """ Retrieves posts containing a given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel,get_parameters={'channel': channel})
@@ -638,7 +639,7 @@ class Connection(object):
 
     def country_feed(self):
         """ Retrieves this location's countries posts. Just here for orthogonality. """
-        # FIXME check if this works
+        # FIXME check if this works => doesn't work with these parameters
         return self._api_request(TOOLS.Connection.APIMethodsType.get_country_posts,country=self.location['country'])
 
     def delete_post(self, postid):

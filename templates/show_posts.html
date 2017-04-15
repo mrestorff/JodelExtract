@@ -7,7 +7,7 @@
 
         {% include "panel-heading.html" %}
 
-        <ul id="jodels-list" class="list-group list-unstyled">
+        <ul id="jodels-list" class="list-group list-unstyled {{ random_color }}">
           {% for post in posts %}
           <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}" id="{{ post.id }}">
             {% if not post.system_message %}<a href="/post/{{ post.id }}{% if channel %}?channel={{ channel }}{% endif %}">{% endif %}
@@ -59,6 +59,15 @@
             </div>
             {% if not post.system_message %}</a>{% endif %}
           </li>
+
+          {% else %}
+          <div class="error-message">
+            <h2>No posts found</h2>
+            <p>
+              Unfortunately, no posts could be fetched.<br />Maybe there aren't any yet?<br />
+              <a href="/setup?kill_session=True">Try a different location!</a>
+            </p>
+          </div>
           {% endfor %}
         </ul>
 
