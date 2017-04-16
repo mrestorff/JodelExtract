@@ -1,6 +1,6 @@
 <div class="panel-heading">
   {% if channel %}
-  <a href="/channel/{{ channel }}/recent"<span class="channel">{{ channel }}</span></a>
+  <a href="{{ url_for('channel', channel=channel, mode='recent') }}"<span class="channel">{{ channel }}</span></a>
   {% else %}
   <span class="location"><!--<span class="glyphicon glyphicon-map-marker town" aria-hidden="true"></span>--> {{ session.loc }}</span>
   {% endif %}
@@ -19,10 +19,10 @@
           ('discussed', 'discussed', 'discussed'),
           ('popular', 'popular', 'popular')
       ] -%}
-      {% set active_page = active_page|default('recent') -%}
+      {% set current_mode = current_mode|default('recent') -%}
       {% for href, id, caption in navigation_bar %}
         <li>
-          <a{% if id == active_page %} class="active"{% endif %} href="{{ base_url }}{{ href|e }}">{{ caption|e }}</a>
+          <a{% if id == current_mode %} class="active"{% endif %} href="{{ base_url }}{{ href|e }}">{{ caption|e }}</a>
         </li>
       {% endfor %}
     </ul>

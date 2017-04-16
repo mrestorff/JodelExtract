@@ -76,7 +76,7 @@
   .list-group-item .row.image .message {
     opacity: 0;
   }
-  .list-group-item img.post_image {
+  #jodels-list .list-group-item img.post_image {
     -webkit-filter: blur(0);
     -moz-filter: blur(0);
   	filter: blur(0);

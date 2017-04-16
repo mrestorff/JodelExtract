@@ -293,7 +293,7 @@ select:-webkit-autofill:focus {
   width: 100%;
   position: relative;
 }
-.list-group-item img.post_image {
+#jodels-list .list-group-item img.post_image {
   -webkit-filter: blur(30px);
   -moz-filter: blur(30px);
 	filter: blur(30px);
@@ -302,7 +302,7 @@ select:-webkit-autofill:focus {
   transform: scale(1.2);
   overflow: hidden;
 }
-.list-group-item:hover img.post_image {
+#jodels-list .list-group-item:hover img.post_image {
   -webkit-filter: blur(0px);
   -moz-filter: blur(0px);
 	filter: blur(0px);

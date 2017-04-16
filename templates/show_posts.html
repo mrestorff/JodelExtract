@@ -10,7 +10,7 @@
         <ul id="jodels-list" class="list-group list-unstyled {{ random_color }}">
           {% for post in posts %}
           <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}" id="{{ post.id }}">
-            {% if not post.system_message %}<a href="/post/{{ post.id }}{% if channel %}?channel={{ channel }}{% endif %}">{% endif %}
+            {% if not post.system_message %}<a href="{{ url_for('post', post_id=post.id) }}{% if channel %}?channel={{ channel }}{% endif %}">{% endif %}
             {% if post.image_url %}
             <img data-original="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop lazy" />
             <noscript>
@@ -71,15 +71,15 @@
             <h2>No posts found</h2>
             <p>
               Unfortunately, no posts could be fetched.<br />Maybe there aren't any yet?<br />
-              <a href="/setup?kill_session=True">Try a different location!</a>
+              <a href="{{ url_for('setup', kill_session='True') }}">Try a different location!</a>
             </p>
           </div>
           {% endfor %}
         </ul>
 
         <div class="panel-footer">
-          <span>{% if last_first_post != None %}<a href="?after={{ last_first_post }}">&laquo; Newer posts</a>{% else %}<a href="{{ base_url }}recent">&laquo; Load recent posts</a>{% endif %}</span>
-          <span class="pull-right"><a href="?before={{ first_post }}&after={{ last_post }}">Older posts &raquo;</a></span>
+          <span>{% if last_first_post != None %}<a href="{{ url_for('posts', mode=current_mode, after=last_first_post) }}">&laquo; Newer posts</a>{% else %}<a href="{{ url_for('posts', mode=current_mode) }}">&laquo; Load previous posts</a>{% endif %}</span>
+          <span class="pull-right"><a href="{{ url_for('posts', mode=current_mode, after=last_post, before=first_post) }}">Older posts &raquo;</a></span>
         </div>
 
       </div>

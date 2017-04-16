@@ -101,23 +101,12 @@ class JodelExtract():
 
         return False
 
-    def view_karma(self, widget, data):
-        """ This method opens a dialog which shows the user's current karma.
-            The karma value is fetched from the API
-
-           widget and data are parameters required for callbacks but are
-           ignored"""
-        reply = self.connection.karma()
-
 
 # ----------------------------------------------------------------------
-# Methods for posts
+# Post fetching methods
 # ----------------------------------------------------------------------
-
     def posts(self, mode=None, after_post_id=None, post_data_dict=None):
-        """ post_data_dict  Initial data for the tab (do not fetch from API)
-            mode  Data fetching mode (e.g. popular mode) from TOOLS.Connection.PostType
-        """
+        """ Fetch post data from API if post_data_dict not given. """
 
         if mode is None:
             #mode = self.posts_mode_dict[post_category_type.POSTS]
@@ -148,38 +137,22 @@ class JodelExtract():
         self.post_data_dict = post_data_dict
 
         if post_data_dict:
-            debug = False
             temp_post_list = []
-            if debug == False:
-                for post in post_data_dict['posts']:
-                    if post['post_id'] in self.post_list:
-                        p = self.post_list[post['post_id']]
-                        p.update(post)
-                    else:
-                        p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
-                        self.post_list[post['post_id']] = p
-                    # delete system messages
-                    if not p.system_message:
-                        temp_post_list.append(p)
+            for post in post_data_dict['posts']:
+                if post['post_id'] in self.post_list:
+                    p = self.post_list[post['post_id']]
+                    p.update(post)
+                else:
+                    p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection)
+                    self.post_list[post['post_id']] = p
+                # delete system messages
+                if not p.system_message:
+                    temp_post_list.append(p)
+            first_post = temp_post_list[0]
+            last_post = temp_post_list[len(temp_post_list)-1]
+            return temp_post_list, first_post.id, last_post.id
         else:
             return [], post_data_dict, False
-
-            if debug == True:
-                post = post_data_dict['posts'][0]
-                print "#########"
-                print post
-                print "#########"
-                input = "0"
-                while input is not "exit":
-                    input = raw_input(">> ")
-                    print "#########"
-                    print post[input]
-                    print "#########"
-
-
-        first_post = temp_post_list[0]
-        last_post = temp_post_list[len(temp_post_list)-1]
-        return temp_post_list, first_post.id, last_post.id
 
 
     def _open_channel(self, channel, mode=None, after_post_id=None, main=None, channel_data_dict=None):
@@ -216,7 +189,6 @@ class JodelExtract():
             head = channel
         s_unicode = head.decode("iso-8859-1")
         channel_utf8 = s_unicode.encode("utf-8")
-
 
         # Check if this channel has posts, and list them if yes
         channel_posts_list = channel_data_dict['posts']
@@ -265,93 +237,36 @@ class JodelExtract():
         # Fetch posts from the API
         this_post = post = self.connection.particular_post(post_id)
 
-        # handling response difference between API v2 and v3
-        api_version = 'v3'
-
-        if api_version == 'v3':
-            if this_post is None:
-                print "Could not fetch " + post_id
-                for post in self.post_data_dict['posts']:
-                    if post['post_id'] == post_id:
-                        this_post = post
-                        break
-            elif this_post is False:
-                return False, post_id
-            else:
-                pass
-
-            this_post = this_post['details']
-
-            # generate & update post object for original post
-            temp_post_list = []
-            if this_post['post_id'] in self.post_list:
-                p = self.post_list[this_post['post_id']]
-                # update post object
-                p.update(this_post)
-                temp_post_list.append(p)
-            else:
-                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
-                temp_post_list.append(p)
-                self.post_list[this_post['post_id']] = p
-
-            # Check if this post has replies, and list them if yes
-            children_posts_list = post.get('replies')
-            # Counts the number of responses, counts even when one poster posts multiple times
-            response_index = 0
-            comments_list = []
-            if children_posts_list is not None and len(children_posts_list) > 0:
-                for reply in children_posts_list:
-                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
-            return comments_list, self.post_list[this_post['post_id']]
-
+        if this_post is None:
+            print "Could not fetch " + post_id
+            for post in self.post_data_dict['posts']:
+                if post['post_id'] == post_id:
+                    this_post = post
+                    break
+        elif this_post is False:
+            return False, post_id
         else:
-            # get post & answers
-            if this_post is None:
-                print "Could not fetch " + post_id
-                for post in self.post_data_dict['posts']:
-                    if post['post_id'] == post_id:
-                        this_post = post
-                        break
-            if this_post is None:
-                return False
+            pass
 
-            # generate & update post object for original post
-            temp_post_list = []
-            if this_post['post_id'] in self.post_list:
-                p = self.post_list[this_post['post_id']]
-                # update post object
-                p.update(this_post)
-                temp_post_list.append(p)
-            else:
-                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
-                temp_post_list.append(p)
-                self.post_list[this_post['post_id']] = p
+        this_post = this_post['details']
+        # generate & update post object for original post
+        temp_post_list = []
+        if this_post['post_id'] in self.post_list:
+            p = self.post_list[this_post['post_id']]
+            p.update(this_post)
+            #temp_post_list.append(p)
+        else:
+            p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+            #temp_post_list.append(p)
+            self.post_list[this_post['post_id']] = p
 
-            # extract data we need for user numbering
-            user_handle = post.get('user_handle')
-            userlist = None
-            if user_handle is not None:
-                # OP gets id 0
-                userlist = {post['user_handle']: 0}
-
-            # Check if this post has replies, and list them if yes
-            children_posts_list = this_post.get('children')
-            # Counts the number of responses, counts even when one poster posts multiple times
-            response_index = 0
-            comments_list = []
-            if children_posts_list is not None and len(children_posts_list) > 0:
-                for reply in children_posts_list:
-                    # Sometimes, the API supplies us with user numbers to
-                    # view who posted which answer
-                    response_index += 1
-                    user_handle = reply.get('user_handle')
-                    user_index = None
-                    if (user_handle is not None) and (userlist is not None):
-                        if user_handle not in userlist:
-                            userlist[user_handle] = response_index
-                        user_index = userlist[user_handle]
-                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,userno=user_index,reply=True))
-            return comments_list
+        children_posts_list = post.get('replies')
+        response_index = 0
+        comments_list = []
+        if children_posts_list is not None and len(children_posts_list) > 0:
+            for reply in children_posts_list:
+                comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+        return comments_list, self.post_list[this_post['post_id']]
 
     def get_user_posts(self, user_id):
         post_list = []
@@ -364,7 +279,13 @@ class JodelExtract():
             return None
 
     #------------------------------------------------------------
-    # User Interactions
+    # User information
+    #------------------------------------------------------------
+    def view_karma(self):
+        return self.connection.karma()
+
+    #------------------------------------------------------------
+    # User interactions
     #------------------------------------------------------------
     def _share(self, post_id):
         share = self.connection.share(post_id)
@@ -381,13 +302,14 @@ class JodelExtract():
         if re is not None:
             print "Voted " + post_id
 
-    def _vote(self, post_id, value):
+    def _pin(self, post_id, value):
         if value == 1:
             re = self.connection.pin(post_id)
         else:
             re = self.connection.unpin(post_id)
         if re is not None:
             print "Pinned " + post_id
+
 
 def start(loc, mode=None, channels=None):
     if loc is not '':
@@ -399,14 +321,11 @@ def start(loc, mode=None, channels=None):
     win.initialize(citycc=loc, mode=mode, initial_channels=channels)
     return win
 
-
+# TODO: Get rid of text-based console interface
 if __name__ == '__main__':
-    # The main routine
-
     print cfg.SPLASH_TEXT
 
     loc = raw_input("Please specify the location (format: City, CC) >> ")
-
     if loc is not '':
         print "Location specified as " + loc
     else:
@@ -434,8 +353,6 @@ if __name__ == '__main__':
             mode = modes[x]
             channels = None
         elif x == 4:
-            # create session here?
-            #channels = raw_input("What channels do you want to load? (separate by space) >> ").split()
             channels = []
             channels.append(i[1])
             mode = None
