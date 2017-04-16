@@ -5,12 +5,15 @@ import sqlite3
 import random
 import threading
 import webbrowser
+import argparse
+import sys
 import main
 import TOOLS.Config as cfg
 
 app = Flask(__name__)
-app.config['DEBUG'] = cfg.DEBUG
+#app.config['DEBUG'] = cfg.DEBUG
 instance = None
+cmd_loc = None
 
 # ----------------------------------------------
 # SQL database setup and connection
@@ -72,7 +75,7 @@ def remote_functions():
         instance._pin(post_id, value)
     return dict(random_color=random_col(), random_col=random_col, vote=vote, pin=pin)
 
-@app.route('/setup', methods=['POST', 'GET'])
+@app.route('/setup/', methods=['POST', 'GET'])
 def setup():
     global instance
     if request.args.get('kill_session') == "True":
@@ -80,7 +83,11 @@ def setup():
         instance = None
         return redirect(url_for('index'))
     else:
-        location = request.form.get('location')
+        if cmd_loc is not None:
+            location = cmd_loc
+        else:
+            location = request.form.get('location')
+            usage_mode = request.form.get('usage_mode')
         instance = main.start(loc=location)
         if not instance == None:
             get_db(instance.connection.get_location_city())
@@ -143,16 +150,37 @@ def user_posts(user_id):
 
 @app.route('/')
 def index():
-    if not instance:
+    if cmd_loc is not None:
+        return redirect(url_for('setup'))
+    elif not instance:
         session['title'] = "JodelExtract"
         return render_template('setup.html')
     else:
         return redirect(url_for('posts', mode='recent'))
 
 app.secret_key = '192837465'
+
+def set_cmd_loc(location=None):
+    global cmd_loc
+    if location is not None:
+        cmd_loc = location
+        print "Chosen location: " + cmd_loc
+
 if __name__ == "__main__":
+    debug = False
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--location', nargs='+', help='A location, e.g. Hamburg, DE', metavar='CITY, CC')
+    parser.add_argument('-d', '--debug', action='store_true')
+
+    args = parser.parse_args()
+    debug = args.debug
+    if args.location:
+        arg_str = ', '.join(args.location)
+        set_cmd_loc(arg_str)
+    #loc = args.get('location')
+
     port = 5000# + random.randint(0, 999)
     url = "http://127.0.0.1:{0}".format(port)
     threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
     print cfg.SPLASH_TEXT
-    app.run(port=port, debug=False)
+    app.run(port=port, debug=debug)

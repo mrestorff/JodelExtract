@@ -13,17 +13,22 @@
   .panel-heading ul.nav > li > a {
     padding: 0 8px;
   }
+}
+@media (max-width: 728px) {
   header {
     padding-bottom: 0;
   }
-}
-@media (max-width: 728px) {
   .container.setup {
     border-radius: 0 !important;
     margin-top: 0;
   }
-  .container.setup input {
+  .setup input, .switch-field label {
     font-size: 1.6em;
+  }
+  .switch-field label {
+    font-size: 1em;
+  }
+  .container.setup input {
     width: 100%;
   }
   .container.setup .location input[type=submit] {

@@ -39,6 +39,10 @@ a:hover {
   text-decoration: none;
   outline: none;
 }
+main {
+  padding: 50px 0;
+  min-width: 400px;
+}
 
 /* Colours */
 body.green { background-color: #6e8813 }
@@ -83,9 +87,6 @@ ul.navbar-nav > li {
 .nav>li>a:focus, .nav>li>a:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }
-main {
-  padding: 50px 0;
-}
 
 /* --------------- Setup Page --------------- */
 .container.setup {
@@ -100,17 +101,54 @@ main {
 .container.setup > .row.message {
   padding-bottom: 30px;
 }
-.container.setup .location {  width: 100%;
-
+.container.setup .location {
+  width: 100%;
 }
-.setup input {
+.setup input, .switch-field label {
   padding: 0.2em;
   font-size: 2em;
   outline: none;
   border: 5px solid #fff;
-  color: #ffffff;
+  color: #fff;
 }
-
+.switch-field input[type=radio] {
+    position: absolute !important;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    width: 1px !important;
+    border: 0;
+    overflow: hidden;
+}
+.switch-field label {
+  font-size: 1.3em;
+  float: left;
+  display: inline-block;
+  width: 50%;
+  background-color: rgba(0,0,0,0);
+  font-weight: normal;
+  text-align: center;
+  text-shadow: none;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition:    all 0.1s ease-in-out;
+  -ms-transition:     all 0.1s ease-in-out;
+  -o-transition:      all 0.1s ease-in-out;
+  transition:         all 0.1s ease-in-out;
+}
+.switch-field label:first-of-type {
+  border-right: 0;
+}
+.switch-field label:last-of-type {
+  border-left: 0;
+}
+.switch-field label:hover {
+    cursor: pointer;
+}
+.switch-field input:checked + label {
+  background-color: #fff;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: #666;
+}
 .setup input[type=text] {
   background-color: #fff;
   width: 70%;

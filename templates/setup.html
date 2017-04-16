@@ -9,6 +9,12 @@
   <div class="row message">
     <div class="col-md-6 col-sm-8 col-xs-12 col-md-offset-3 col-sm-offset-2">
       <form action="{{ url_for('setup', kill_session='False') }}" method="POST" name="Submit" class="center-block {{ random_color }}">
+        <div class="switch-field">
+          <input type="radio" id="switch_left" name="usage_mode" value="interactive" disabled/>
+          <label for="switch_left">Interactive</label>
+          <input type="radio" id="switch_right" name="usage_mode" value="passive" checked disabled/>
+          <label for="switch_right">Passive</label>
+        </div>
         <div class="location">
           <input type="text" name="location" list="location" placeholder="e.g. Hamburg, DE" class="{{ random_color }}" />
           <datalist id="location">
@@ -27,6 +33,7 @@
         </div>
       </form>
       <form action="{{ url_for('setup', kill_session='False') }}" method="POST">
+        <input type="hidden" name="usage_mode" value="interactive" />
         <input type="hidden" name="location" value="" />
         <input type="submit" name="Use IP location" class="ip {{ random_color }}" value="Use IP location" />
       </form>
