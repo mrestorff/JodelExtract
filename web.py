@@ -70,7 +70,7 @@ def remote_functions():
         instance._vote(post_id, value)
     def pin(post_id, value): # 1=pin; 0=unpin
         instance._pin(post_id, value)
-    return dict(random_color=random_col(), random_col=random_col, vote=vote(), pin=pin())
+    return dict(random_color=random_col(), random_col=random_col, vote=vote, pin=pin)
 
 @app.route('/setup', methods=['POST', 'GET'])
 def setup():
@@ -150,7 +150,6 @@ def index():
         return redirect(url_for('posts', mode='recent'))
 
 app.secret_key = '192837465'
-
 if __name__ == "__main__":
     port = 5000# + random.randint(0, 999)
     url = "http://127.0.0.1:{0}".format(port)
