@@ -1,16 +1,17 @@
 #!/usr/bin/env python2
-#
-# JodelExtract Configuration File
-#
+# # # # # # # # # # # # # # # # # #
+# JodelExtract Configuration File #
+# # # # # # # # # # # # # # # # # #
 
 # app version to use when not specified otherwise
 APP_VERSION  = '4.41.0'
 
 # General and debugging settings
-VERBOSE = True # Print to command line
-CONNECTION_VERBOSE = False # Connection debug printing
+VERBOSE = True # Print post handling to command line
+CONNECTION_VERBOSE = False # Connection actions printing
 DEBUG = False # print posts to command line & activate Flask debugger
 DBG_NO_IMAGES = False # Disable image download
+LOCAL_IMAGE_URLS = True # Get image URLs from local storage
 
 # App name and author for temp directory
 APP_NAME = "JodelExtract"
@@ -23,7 +24,6 @@ DATABASE_PATH = 'tmp/'
 USERNAME = ''
 PASSWORD = ''
 
-
 # App key
 ANDROID_CLIENT_ID="81e8a76e-1e02-4d17-9ba0-8a7020261b26"
 WODEL_CLIENT_ID="6a62f24e-7784-0226-3fffb-5e0e895aaaf"
@@ -35,8 +35,13 @@ SPLASH_TEXT="""
     ###########################################
 
      ...opening web browser automatically...
-
 """
+
+def set_config(debug, verbose):
+    global CONNECTION_VERBOSE
+    global DEBUG
+    DEBUG = debug
+    CONNECTION_VERBOSE = verbose
 
 class ConfigType():
     """ Just a type to hold the configuration paramters """

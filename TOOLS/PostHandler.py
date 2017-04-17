@@ -30,8 +30,9 @@ class Post(object):
 
         # Workaround for API not returning child_count
         if not self.reply and not 'child_count' in self.post.keys():
-            print "NO child_count FOUND IN DICT! \n"
-            print post
+            print_verbose("NO child_count FOUND IN DICT!")
+            print_verbose(post)
+            print_verbose(" - - - ")
             self.post['child_count'] = 0
 
         # format post message (removing newlines)
@@ -63,7 +64,7 @@ class Post(object):
         if post['color']:
             self.color = colorspec.get('#' + post['color'], 'grey')
 
-        image_url = post.get('image_url')
+        self.image_url = image_url = post.get('image_url')
         if (image_url is None):
             pass
         elif not cfg.DBG_NO_IMAGES:
@@ -90,10 +91,11 @@ class Post(object):
 
                         for block in r.iter_content(1024):
                             handle.write(block)
+                    local_image_url = "file:" + urllib.pathname2url(path)
+                    print_verbose("Downloaded to: " + local_image_url)
 
                 except requests.exceptions.ConnectionError as e:
                     print "failed: " + str(e)
-        self.image_url = image_url
 
         #self.save_post()
         if cfg.DEBUG:

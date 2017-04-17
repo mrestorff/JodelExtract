@@ -11,9 +11,9 @@ import main
 import TOOLS.Config as cfg
 
 app = Flask(__name__)
-#app.config['DEBUG'] = cfg.DEBUG
 instance = None
 cmd_loc = None
+cmd_mode = None
 
 # ----------------------------------------------
 # SQL database setup and connection
@@ -77,6 +77,7 @@ def remote_functions():
 
 @app.route('/setup/', methods=['POST', 'GET'])
 def setup():
+    global cmd_loc
     global instance
     if request.args.get('kill_session') == "True":
         del(instance)
@@ -85,6 +86,8 @@ def setup():
     else:
         if cmd_loc is not None:
             location = cmd_loc
+            usage_mode = cmd_mode
+            cmd_loc = None
         else:
             location = request.form.get('location')
             usage_mode = request.form.get('usage_mode')
@@ -154,33 +157,38 @@ def index():
         return redirect(url_for('setup'))
     elif not instance:
         session['title'] = "JodelExtract"
-        return render_template('setup.html')
+        return render_template('setup.html', usage_mode=cmd_mode)
     else:
         return redirect(url_for('posts', mode='recent'))
 
 app.secret_key = '192837465'
 
-def set_cmd_loc(location=None):
+def set_cmd(args):
     global cmd_loc
-    if location is not None:
-        cmd_loc = location
+    global cmd_mode
+    cfg.set_config(args.debug, args.verbose)
+    app.debug = args.debug
+    cmd_mode = args.mode
+    if args.location and len(args.location) is 2:
+        arg_str = ", ".join(args.location)
+        cmd_loc = arg_str
         print "Chosen location: " + cmd_loc
+    elif len(args.location) > 2:
+        print "Invalid location input!"
 
 if __name__ == "__main__":
-    debug = False
     parser = argparse.ArgumentParser()
-    parser.add_argument('-l', '--location', nargs='+', help='A location, e.g. Hamburg, DE', metavar='CITY, CC')
-    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument("-d", "--debug", action="store_true", help="activate Flask debugging")
+    parser.add_argument("-v", "--verbose", action="store_true", help="print connection handling")
+    parser.add_argument("-l", "--location", nargs="+", help="a location, e.g. Hamburg, DE", metavar="CITY, CC")
+    parser.add_argument("-m", "--mode", choices=["read", "write"], default="read", help="read-only or write mode (default: %(default)s)")
 
     args = parser.parse_args()
-    debug = args.debug
-    if args.location:
-        arg_str = ', '.join(args.location)
-        set_cmd_loc(arg_str)
-    #loc = args.get('location')
+    set_cmd(args)
 
     port = 5000# + random.randint(0, 999)
     url = "http://127.0.0.1:{0}".format(port)
     threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
     print cfg.SPLASH_TEXT
-    app.run(port=port, debug=debug)
+
+    app.run(port=port)

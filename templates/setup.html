@@ -10,10 +10,10 @@
     <div class="col-md-6 col-sm-8 col-xs-12 col-md-offset-3 col-sm-offset-2">
       <form action="{{ url_for('setup', kill_session='False') }}" method="POST" name="Submit" class="center-block {{ random_color }}">
         <div class="switch-field">
-          <input type="radio" id="switch_left" name="usage_mode" value="interactive" disabled/>
-          <label for="switch_left">Interactive</label>
-          <input type="radio" id="switch_right" name="usage_mode" value="passive" checked disabled/>
-          <label for="switch_right">Passive</label>
+          <input type="radio" id="switch_left" name="usage_mode" value="write"  {% if usage_mode == "write" %}checked  {% endif %} disabled/>
+          <label for="switch_left">Write</label>
+          <input type="radio" id="switch_right" name="usage_mode" value="read" {% if usage_mode == "read" %}checked  {% endif %}disabled/>
+          <label for="switch_right">Read</label>
         </div>
         <div class="location">
           <input type="text" name="location" list="location" placeholder="e.g. Hamburg, DE" class="{{ random_color }}" />
