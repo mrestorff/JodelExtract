@@ -91,8 +91,8 @@ class Post(object):
 
                         for block in r.iter_content(1024):
                             handle.write(block)
-                    local_image_url = "file:" + urllib.pathname2url(path)
-                    print_verbose("Downloaded to: " + local_image_url)
+                    #local_image_url = "file:" + urllib.pathname2url(path)
+                    #print_verbose("Downloaded to: " + local_image_url)
 
                 except requests.exceptions.ConnectionError as e:
                     print "failed: " + str(e)
