@@ -130,8 +130,10 @@ class APIMethodsType:
     get_popular           = APIMethod(method='GET', url='posts/location/popular/', get_parameters=True) #new
     get_discussed         = APIMethod(method='GET', url='posts/location/discussed/', get_parameters=True) #new
     get_country_posts     = APIMethod(method='GET', url='feed/country/', country=True)
-    #get_post              = APIMethod(method='GET', url='posts/', postid=True)
-    get_post              = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details?details=true&reversed=false') #new
+    get_post              = APIMethod(method='GET', url='posts/', postid=True)
+    #get_post              = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details?details=true&reversed=false') #new
+                            # NOTE: currently disabled and using old API v2
+                            # NOTE: "details=false" will only return comments, not the OP. "reversed" shows recent comments first
     share                 = APIMethod(method='POST', url='posts/', postid=True, version='v3', postfix='share/') #new
     get_my_posts          = APIMethod(method='GET', url='posts/mine/')
     get_my_replies        = APIMethod(method='GET', url='posts/mine/replies/')

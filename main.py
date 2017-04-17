@@ -205,9 +205,9 @@ class JodelExtract():
                 print "Loading *critical* channel @" + channel + "\nBeware of explicit content!"
                 time = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 message = {"message":"Caution! This channel may contain explicit images and/or language, or indications of drug use.",
-                "created_at":time,"updated_at":time,"pin_count":0,"color":"999999","got_thanks":"false",
+                "created_at":time,"updated_at":time,"pin_count":0,"color":"999999","ptp_post":True,"got_thanks":"false",
                 "thanks_count":0,"child_count":0,"replier":0,"post_id":"ChannelWarningMessage999",
-                "discovered_by":0,"vote_count":0,"share_count":0,"user_handle":"oj","post_own":"team","distance":99,
+                "discovered_by":0,"vote_count":0,"share_count":0,"user_handle":"oj","post_own":"team","distance":100,
                 "location":{
                     "name":"Hamburg",
                     "loc_coordinates":{"lat":0,"lng":0},
@@ -223,19 +223,23 @@ class JodelExtract():
             for post in channel_posts_list:
                 p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection,channel=channel)
                 temp_post_list.append(p)
-                # inserting into permanent list as well
                 self.post_list[post['post_id']] = p
 
-            first_post = temp_post_list[0]
-            last_post = temp_post_list[len(temp_post_list)-1]
+            # FIXME: handling of short channel post lists (temp_post_list returns None)
+            if temp_post_list:
+                first_post = temp_post_list[0]
+                last_post = temp_post_list[len(temp_post_list)-1]
             return temp_post_list, first_post.id, last_post.id
 
 
     def _open_post(self, post_id, main=None):
         """ Update original post and load comments from API """
 
-        # Fetch posts from the API
         this_post = post = self.connection.particular_post(post_id)
+
+        version = "v2"
+        if cfg.PRINT_API:
+            print post
 
         if this_post is None:
             print "Could not fetch " + post_id
@@ -248,25 +252,41 @@ class JodelExtract():
         else:
             pass
 
-        this_post = this_post['details']
-        # generate & update post object for original post
-        temp_post_list = []
-        if this_post['post_id'] in self.post_list:
-            p = self.post_list[this_post['post_id']]
-            p.update(this_post)
-            #temp_post_list.append(p)
-        else:
-            p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
-            #temp_post_list.append(p)
-            self.post_list[this_post['post_id']] = p
+        if version is "v3":
+            # Post API v3
+            this_post = this_post['details']
+            temp_post_list = []
+            if this_post['post_id'] in self.post_list:
+                p = self.post_list[this_post['post_id']]
+                p.update(this_post)
+            else:
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                self.post_list[this_post['post_id']] = p
 
-        children_posts_list = post.get('replies')
-        response_index = 0
-        comments_list = []
-        if children_posts_list is not None and len(children_posts_list) > 0:
-            for reply in children_posts_list:
-                comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
-        return comments_list, self.post_list[this_post['post_id']]
+            children_posts_list = post.get('replies')
+            response_index = 0
+            comments_list = []
+            if children_posts_list is not None and len(children_posts_list) > 0:
+                for reply in children_posts_list:
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+            return comments_list, self.post_list[this_post['post_id']]
+
+        else:
+            # Post API v2
+            temp_post_list = []
+            if this_post['post_id'] in self.post_list:
+                p = self.post_list[this_post['post_id']]
+                p.update(this_post)
+            else:
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                self.post_list[this_post['post_id']] = p
+
+            children_posts_list = this_post.get('children')
+            comments_list = []
+            if children_posts_list is not None and len(children_posts_list) > 0:
+                for reply in children_posts_list:
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+            return comments_list, self.post_list[this_post['post_id']]
 
     def get_user_posts(self, user_id):
         post_list = []
@@ -320,46 +340,3 @@ def start(loc, mode=None, channels=None):
     win = JodelExtract()
     win.initialize(citycc=loc, mode=mode, initial_channels=channels)
     return win
-
-# TODO: Get rid of text-based console interface
-if __name__ == '__main__':
-    print cfg.SPLASH_TEXT
-
-    loc = raw_input("Please specify the location (format: City, CC) >> ")
-    if loc is not '':
-        print "Location specified as " + loc
-    else:
-        loc = "Hamburg, DE"
-        print "Using default location " + loc
-
-    print """
-    MODE SELECTION:
-        1. Recent posts
-        2. Most popular
-        3. Most discussed
-        4. Combination of 1-3
-        5. Load Channel ["5 + channel name"]
-        """
-    modes = [TOOLS.Connection.PostType.ALL,
-             TOOLS.Connection.PostType.POPULAR,
-             TOOLS.Connection.PostType.DISCUSSED,
-             TOOLS.Connection.PostType.COMBO]
-    i = raw_input("What mode do you want to use? >> ")
-    if i:
-        i = i.split()
-        x = int(i[0])-1
-        print "\n#############################################################\n"
-        if x <= 3:
-            mode = modes[x]
-            channels = None
-        elif x == 4:
-            channels = []
-            channels.append(i[1])
-            mode = None
-    else:
-        mode = None
-        channels = None
-
-    win = JodelExtract()
-    win.initialize(citycc=loc, mode=mode, initial_channels=channels)
-    win.posts(mode=mode)

@@ -12,11 +12,15 @@ def print_verbose(message):
     if cfg.VERBOSE:
         print message
 
+# TODO: !!! Comment class living inside the post object? -> Post object holds all its comments
+# https://bitbucket.org/cfib90/ojoc/issues/30/new-postdetails-api-endpoint for details on new API.
+# Supplying the whole thing including comment list to post object might be sensible, because '"next": null'
+# and '"remaining": 0' need to be supplied as well for comment pagination
 class Post(object):
     def __init__(self,post,tempdir,main_window,connection,channel=False,userno=None,reply=False):
         """ post        Post data
             tempdir     Directory for downloaded images
-            main_window Reference to main window
+            main_window Reference to main JodelExtract class
             connection  server connection from connection.py
             userno      Number of user in post
             reply       Flag if this is an original post (False) or a reply (True)"""
@@ -27,6 +31,9 @@ class Post(object):
         self.main_window = main_window
         self.connection = connection
         self.reply = reply
+
+        if cfg.DEBUG:
+            print post
 
         # Workaround for API not returning child_count
         if not self.reply and not 'child_count' in self.post.keys():
@@ -54,7 +61,7 @@ class Post(object):
             if post['user_handle'].lower() == "oj":
                 self.by_oj = True
                 self.replier = 0
-            else:
+            elif self.post.get('replier'):
                 self.replier = post['replier']
         else:
             print_verbose("Handling post " + post['post_id'])
@@ -98,8 +105,6 @@ class Post(object):
                     print "failed: " + str(e)
 
         #self.save_post()
-        if cfg.DEBUG:
-            print post
         self.get_data()
 
     def get_data(self):
@@ -107,6 +112,7 @@ class Post(object):
         date = datetime.datetime.strptime(self.post['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
         self.date = date.strftime('%Y-%m-%d at %H:%M:%S')
         self.timedelta = prettytime.pretty(self.post['created_at'])
+        self.location = (self.post.get('location').get('name'))
 
     def get_hashtags(self):
         hashtags = re.findall(r"#(\w+)", self.post['message'])

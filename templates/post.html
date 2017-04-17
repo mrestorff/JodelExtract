@@ -86,11 +86,11 @@
           {% endfor %}
         </ul>
 
-        {% if post.post.child_count > 10 %}
+        {% if post.post.child_count > 11 %}
         <!-- TODO: Pagination for comments -->
         <div class="panel-footer">
           <span><a href="#jodel-detail">To the Top</a></span>
-          <span class="pull-right"><a href="#{{ comments[post.post.child_count-1].id }}">Scroll to last comment</a></span>
+          <span class="pull-right"><a href="#{{ comments[11].id }}">Scroll to last comment</a></span><!--post.post.child_count-1-->
         </div>
         {% endif %}
       </div>

@@ -168,24 +168,27 @@ def arguments():
     global cmd_mode
 
     parser = argparse.ArgumentParser()
-    opt = parser.add_argument_group("AppSettings", "application settings and options")
+    opt = parser.add_argument_group("App Settings", "application settings and options")
     opt.add_argument("-i", "--store-images", action="store_true", help="store images in temp folder")
     opt.add_argument("-p", "--store-posts", action="store_true", help="store posts in database [UNAVAILABLE]")
     opt.add_argument("-l", "--location", nargs=1, help="a location, e.g. Hamburg,DE (without spaces!)", metavar="CITY,CC")
     opt.add_argument("-m", "--mode", choices=["read", "write"], default="read", help="read-only or write mode (default: %(default)s)")
-    debug = parser.add_argument_group("Debugging")
+    debug = parser.add_argument_group("Debugging Options")
     debug.add_argument("-d", "--debug", action="store_true", help="activate Flask debugging")
     debug.add_argument("-v", "--verbose", action="store_true", help="print connection handling")
+    debug.add_argument("-a", "--api-replies", action="store_true", help="print API post replies")
     args = parser.parse_args()
 
-    cfg.set_config(args.debug, args.verbose, args.store_images, args.store_posts)
+    cfg.set_config(args.debug, args.verbose, args.store_images, args.store_posts, args.api_replies)
     app.debug = args.debug
     cmd_mode = args.mode
     if args.location and len(args.location) is 1:
-        arg_str = ", ".join(args.location)
-        cmd_loc = arg_str
+        # Not needed anymore, only one argument now
+        #arg_str = ", ".join(args.location)
+        #cmd_loc = arg_str
+        cmd_loc = args.location
         print "Chosen location: " + cmd_loc
-    elif len(args.location) > 1:
+    elif args.location and len(args.location) is not 1:
         print "Invalid location input!"
         parser.print_help()
         sys.exit(1)

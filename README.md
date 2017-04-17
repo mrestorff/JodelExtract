@@ -20,8 +20,7 @@ This is **not** an official Jodel app.
 ## Using JodelExtract
 
 1. Start via command line / terminal `python web.py`, the webbrowser is opened automatically
-2. Enter location in the format "City, CC" (e.g. Hamburg, DE).  
-  If that city can't be found, your current IP-based position will be used
+2. Enter location in the format "City, CC" (e.g. Hamburg, DE). If that city can't be found, your current IP-based position will be used
 3. The latest posts will be loaded, click on posts to see the comments
   1. Use links in navigation bar to list the most liked, or most discussed posts from your location
 4. All the available channels at your current location can be used as well.  

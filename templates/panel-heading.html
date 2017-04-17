@@ -1,6 +1,8 @@
 <div class="panel-heading">
   {% if channel %}
   <a href="{{ url_for('channel', channel=channel, mode='recent') }}"<span class="channel">{{ channel }}</span></a>
+  {% elif post %}
+  <span class="location"><!--<span class="glyphicon glyphicon-map-marker town" aria-hidden="true"></span>--> {{ post.location }}</span>
   {% else %}
   <span class="location"><!--<span class="glyphicon glyphicon-map-marker town" aria-hidden="true"></span>--> {{ session.loc }}</span>
   {% endif %}

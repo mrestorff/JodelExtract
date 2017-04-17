@@ -12,6 +12,7 @@ CONNECTION_VERBOSE = False # Connection actions printing
 DEBUG = False # print posts to command line & activate Flask debugger
 DBG_NO_IMAGES = False # Disable image download
 STORE_POSTS = False
+PRINT_API = False
 
 # App name and author for temp directory
 APP_NAME = "JodelExtract"
@@ -37,15 +38,17 @@ SPLASH_TEXT="""
      ...opening web browser automatically...
 """
 
-def set_config(debug, verbose, store_images, store_posts):
+def set_config(debug, verbose, store_images, store_posts, print_api):
     global CONNECTION_VERBOSE
     global DEBUG
     global DBG_NO_IMAGES
     global STORE_POSTS
+    global PRINT_API
     DEBUG = debug
     CONNECTION_VERBOSE = verbose
     DBG_NO_IMAGES = not store_images
     STORE_POSTS = store_posts
+    PRINT_API = print_api
 
 class ConfigType():
     """ Just a type to hold the configuration paramters """
