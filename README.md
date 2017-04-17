@@ -1,6 +1,10 @@
 # Readme #
 
-JodelExtract is a Flask-based web app for the Jodel API. Curently, it can display posts from the timeline and all channels in a read-only mode. Soon though, it will enable the user to interact with the server as well, meaning the user can vote, write, and pin posts.
+JodelExtract is a Flask-based web app for the Jodel API. Curently, it can display
+posts from the timeline and all channels in a read-only mode. Soon though,
+it will enable the user to interact with the server as well, meaning the user can
+vote, write, and pin posts.
+This is **not** an official Jodel app.
 
 ### Prerequisites
 
@@ -13,13 +17,15 @@ JodelExtract is a Flask-based web app for the Jodel API. Curently, it can displa
 * `python-dateutil`
 * `python-flask`
 
-### Using JodelExtract
+## Using JodelExtract
 
 1. Start via command line / terminal `python web.py`, the webbrowser is opened automatically
-2. Enter location in the format "City, CC" (e.g. Hamburg, DE). If that city can't be found, your current IP-based position will be used
+2. Enter location in the format "City, CC" (e.g. Hamburg, DE).
+  If that city can't be found, your current IP-based position will be used
 3. The latest posts will be loaded, click on posts to see the comments
-4. Use links in navigation bar to list the most liked, or most discussed posts from your location
-5. All the available channels at your current location can be used as well. [Note: the channel feature is only active in some locations, mostly those with a large user base.]
+  1. Use links in navigation bar to list the most liked, or most discussed posts from your location
+4. All the available channels at your current location can be used as well.
+  [Note: the channel feature is only active in some locations, mostly those with a large user base.]
 
 ### Command line options
 
@@ -44,6 +50,6 @@ Debugging:
     -v, --verbose       print connection handling to command line
 ```
 
-### Credits
+#### Credits
 
-The HMAC decryption and authorisation with the server is courtesy of Christian Fibich's project OJOC.
+The HMAC secret decryption and authorisation with the server is courtesy of Christian Fibich's project OJOC.
