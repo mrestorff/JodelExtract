@@ -1,4 +1,5 @@
 # Specific files
+TOOLS/Config.py # Caution! Delete this for App Config changes
 ojoc.py
 TOOLS/gui.py
 *.pyc
