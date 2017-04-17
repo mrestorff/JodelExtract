@@ -163,32 +163,37 @@ def index():
 
 app.secret_key = '192837465'
 
-def set_cmd(args):
+def arguments():
     global cmd_loc
     global cmd_mode
-    cfg.set_config(args.debug, args.verbose)
+
+    parser = argparse.ArgumentParser()
+    opt = parser.add_argument_group("AppSettings", "application settings and options")
+    opt.add_argument("-i", "--store-images", action="store_true", help="store images in temp folder")
+    opt.add_argument("-p", "--store-posts", action="store_true", help="store posts in database [UNAVAILABLE]")
+    opt.add_argument("-l", "--location", nargs=1, help="a location, e.g. Hamburg,DE (without spaces!)", metavar="CITY,CC")
+    opt.add_argument("-m", "--mode", choices=["read", "write"], default="read", help="read-only or write mode (default: %(default)s)")
+    debug = parser.add_argument_group("Debugging")
+    debug.add_argument("-d", "--debug", action="store_true", help="activate Flask debugging")
+    debug.add_argument("-v", "--verbose", action="store_true", help="print connection handling")
+    args = parser.parse_args()
+
+    cfg.set_config(args.debug, args.verbose, args.store_images, args.store_posts)
     app.debug = args.debug
     cmd_mode = args.mode
-    if args.location and len(args.location) is 2:
+    if args.location and len(args.location) is 1:
         arg_str = ", ".join(args.location)
         cmd_loc = arg_str
         print "Chosen location: " + cmd_loc
-    elif len(args.location) > 2:
+    elif len(args.location) > 1:
         print "Invalid location input!"
+        parser.print_help()
+        sys.exit(1)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--debug", action="store_true", help="activate Flask debugging")
-    parser.add_argument("-v", "--verbose", action="store_true", help="print connection handling")
-    parser.add_argument("-l", "--location", nargs="+", help="a location, e.g. Hamburg, DE", metavar="CITY, CC")
-    parser.add_argument("-m", "--mode", choices=["read", "write"], default="read", help="read-only or write mode (default: %(default)s)")
-
-    args = parser.parse_args()
-    set_cmd(args)
-
+    arguments()
     port = 5000# + random.randint(0, 999)
     url = "http://127.0.0.1:{0}".format(port)
     threading.Timer(1.25, lambda: webbrowser.open(url, new=0)).start()
     print cfg.SPLASH_TEXT
-
     app.run(port=port)

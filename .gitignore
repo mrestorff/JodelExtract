@@ -1,6 +1,6 @@
 # Specific files
 # Caution! Delete this for App Config changes
-#TOOLS/Config.py
+TOOLS/Config.py
 ojoc.py
 TOOLS/gui.py
 *.pyc
