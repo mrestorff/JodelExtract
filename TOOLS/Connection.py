@@ -569,27 +569,27 @@ class Connection(object):
 
     # CHANNEL METHODS #
     def get_channel(self, channel, after_post_id): #new
-        """ Retrieves posts containing a given hashtag """
+        """ Retrieves combo posts from a certain channel """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel,get_parameters={'channel': channel, 'after': after_post_id})
 
     def get_channel_popular(self, channel, after_post_id): #new
-        """ Retrieves popular posts containing a given hashtag """
+        """ Retrieves popular posts from a certain channel """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_popular,get_parameters={'channel': channel, 'after': after_post_id})
 
     def get_channel_discussed(self, channel, after_post_id): #new
-        """ Retrieves discussed posts containing a given hashtag """
+        """ Retrieves discussed posts from a certain channel """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_discussed,get_parameters={'channel': channel, 'after': after_post_id})
 
     def get_channel_recent(self, channel, after_post_id): #new
-        """ Retrieves recent posts containing a given hashtag """
+        """ Retrieves recent posts from a certain channel """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_recent,get_parameters={'channel': channel, 'after': after_post_id})
 
     def follow_channel(self,channel):
-        """ Follows a given hashtag """
+        """ Follows a given channel """
         return self._api_request(TOOLS.Connection.APIMethodsType.follow_channel,get_parameters={'channel': channel})
 
     def unfollow_channel(self,channel):
-        """ Unfollows a given hashtag """
+        """ Unfollows a given channel """
         return self._api_request(TOOLS.Connection.APIMethodsType.unfollow_channel,get_parameters={'channel': channel})
 
     def get_hashtag(self, hashtag, after_post_id):
@@ -597,19 +597,19 @@ class Connection(object):
         return self._api_request(TOOLS.Connection.APIMethodsType.get_hashtag, get_parameters={'hashtag': hashtag, 'after': after_post_id})
 
     def get_hashtag_combo(self, hashtag):
-        """ Retrives a combo for the given hashtag """
+        """ Retrieves a combo for the given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_hashtag_combo, get_parameters={'hashtag': hashtag})
 
     def get_hashtag_popular(self, hashtag, after_post_id):
-        """ Retrives the popular posts for the given hashtag """
+        """ Retrieves the popular posts for the given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_hashtag_popular, get_parameters={'hashtag': hashtag, 'after': after_post_id})
 
     def get_hashtag_discussed(self, hashtag, after_post_id):
-        """ Retrives the discussed posts for the given hashtag """
+        """ Retrieves the discussed posts for the given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_hashtag_discussed, get_parameters={'hashtag': hashtag, 'after': after_post_id})
 
     def get_hashtag_recent(self, hashtag, after_post_id):
-        """ Retrives the recent posts for the given hashtag """
+        """ Retrieves the recent posts for the given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_hashtag_recent, get_parameters={'hashtag': hashtag, 'after': after_post_id})
 
     def get_user_config(self):

@@ -155,13 +155,13 @@ class JodelExtract():
 
 
     def _open_channel(self, channel, mode=None, after_post_id=None, main=None, channel_data_dict=None):
-        """ Load posts for channel or hashtag from API """
+        """ Load posts from a given channel from API """
 
-        if not channel in self.channel_name_list:
+        if channel not in self.channel_name_list:
             return False
 
         if mode is None:
-            mode = TOOLS.Connection.PostType.ALL
+            mode = "recent"
 
         # Fetch posts from the API if no data is supplied
         if mode == "popular":
@@ -180,7 +180,7 @@ class JodelExtract():
             channel_data_dict = self.connection.get_channel_recent(channel, after_post_id)
 
         if channel_data_dict is False:
-            return
+            return False
 
         try:
             head = unicode(channel,errors='replace')
@@ -225,6 +225,41 @@ class JodelExtract():
                 self.post_list[post['post_id']] = p
 
             # FIXME: handling of short channel post lists (temp_post_list returns None)
+            if temp_post_list:
+                if channel_utf8.lower() in critical_channels_utf8:
+                    first_post = temp_post_list[1]
+                else:
+                    first_post = temp_post_list[0]
+                last_post = temp_post_list[len(temp_post_list)-1]
+            return temp_post_list, first_post.id, last_post.id
+
+
+    def _open_hashtag(self, hashtag, mode=None, after_post_id=None, main=None, hashtag_data_dict=None):
+        """ Load posts for a given hashtag from API """
+
+        if mode is None:
+            mode = "recent"
+
+        # Fetch posts from the API if no data is supplied
+        if mode == "popular":
+            hashtag_data_dict = self.connection.get_hashtag_popular(hashtag, after_post_id)
+        elif mode == "discussed":
+            hashtag_data_dict = self.connection.get_hashtag_discussed(hashtag, after_post_id)
+        else:
+            hashtag_data_dict = self.connection.get_hashtag_recent(hashtag, after_post_id)
+
+        if hashtag_data_dict is False:
+            return False
+
+        hashtag_posts_list = hashtag_data_dict['posts']
+        if hashtag_posts_list is not None and len(hashtag_posts_list) > 0:
+            temp_post_list = []
+            print "Loading hashtag #" + hashtag
+            for post in hashtag_posts_list:
+                p = TOOLS.PostHandler.Post(post,self.tempdir,self,self.connection,channel=hashtag)
+                temp_post_list.append(p)
+                self.post_list[post['post_id']] = p
+            # FIXME: handling of short hashtag post lists (temp_post_list returns None)
             if temp_post_list:
                 first_post = temp_post_list[0]
                 last_post = temp_post_list[len(temp_post_list)-1]
@@ -289,11 +324,10 @@ class JodelExtract():
                     comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
                 if post['next'] is not None:
                     # NOTE: make for loop out of this
-                    print "Next post to display: " + str(post['next'])
-                    print str(len(children_posts_list)) + " comments displayed, " + str(post['remaining']) + " remaining"
                     children_posts_list_two = (self.connection.particular_post_details(post_id, reply=post['next']).get('replies'))
                     for reply in children_posts_list_two:
                         comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                print str(len(comments_list)) + " comments displayed, " + str(post.get('remaining', default="none")) + " remaining"
             return comments_list, self.post_list[this_post['post_id']]
 
         elif version is "v3":
@@ -312,6 +346,7 @@ class JodelExtract():
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
                     comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                print str(len(comments_list)) + " comments displayed"
             return comments_list, self.post_list[this_post['post_id']]
 
         else:
@@ -329,6 +364,7 @@ class JodelExtract():
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
                     comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                print str(len(comments_list)) + " comments displayed"
             return comments_list, self.post_list[this_post['post_id']]
 
     def get_user_posts(self, user_id):

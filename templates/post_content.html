@@ -1,0 +1,62 @@
+<li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}" id="{{ post.id }}">
+  {% if not post.system_message and base_url %}<a href="{{ url_for('post', post_id=post.id) }}{% if channel %}?channel={{ channel }}{% endif %}">{% endif %}
+  {% if post.image_url %}
+  <img data-original="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop lazy" />
+  <noscript>
+    <img src="{{ post.image_url }}" alt="{{ post.post.message }}" class="channel-image">
+  </noscript>
+  {% endif %}
+  <div class="row center {% if post.image_url %}image{% endif %}">
+    <div class="col-md-11 col-xs-11 message" dir="auto">{% if not post.image_url %}{{ post.post.message }}{% else %}Hover to show{% endif %}</div>
+    {% if not post.system_message %}
+    <div class="col-md-1 col-xs-2 col-sm-1 pull-right voting unselectable" unselectable="on">
+      <div class="row">
+        <img src="/static/images/upvote.png" class="center-block vote-up inactive-toggle">
+      </div>
+      <div class="row">
+        <span class="votes center-block">{{ post.post.vote_count }}</span>
+      </div>
+      <div class="row">
+        <img src="/static/images/downvote.png" class="center-block vote-down inactive-toggle">
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="row time {% if post.image_url %}image{% endif %} unselectable" unselectable="on">
+
+    {% if post.post.child_count > 0 %}
+    <div class="col-md-4 col-xs-4 time-block">
+      <img src="/static/images/time.png" class="icon time">
+      <span class="time" title="{{ post.date }}">{% if not post.system_message %}{{ post.timedelta }}{% else %}by Jodel Team{% endif %}</span>
+    </div>
+    <div class="col-md-4 col-xs-4 comment-block">
+      <img src="/static/images/chat.png" srcset="/static/images/chat@2x.png 2x" class="icon comment">
+      <span class="comment">{{ post.post.child_count }}</span>
+    </div>
+    <div class="col-md-4 col-xs-4 location-block">
+      {% if post.from_home %}
+      <span class="location string">Home</span>
+      <span class="glyphicon glyphicon-home town location" aria-hidden="true"></span>
+      {% else %}
+      <span class="location string">{{ post.named_distance }}</span>
+      <span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="col-md-6 col-xs-6 time-block">
+      <img src="/static/images/time.png" class="icon time">
+      <span class="time" title="{{ post.date }}">{% if not post.system_message %}{{ post.timedelta }}{% else %}by Jodel Team{% endif %}</span>
+    </div>
+    <div class="col-md-6 col-xs-6 location-block">
+      {% if post.from_home %}
+      <span class="location string">Home</span>
+      <span class="glyphicon glyphicon-home town location" aria-hidden="true"></span>
+      {% else %}
+      <span class="location string">{{ post.named_distance }}</span>
+      <span class="glyphicon glyphicon-map-marker town location" aria-hidden="true"></span>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% if not post.system_message and base_url %}</a>{% endif %}
+</li>

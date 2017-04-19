@@ -1,14 +1,21 @@
 <!doctype html>
 <html>
   <head>
-    <title>{{ session.title }}</title>
-    <meta charset="utf-8">
+    <title>{% block title %}{{ session.title }}{% endblock %}</title>
+    <meta charset="utf-8" />
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
     <link href="/static/css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <link href="/static/css/style_jodel.css" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/png" href="/static/images/favicons/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    {% if not session['write_mode'] %}
+    <style>
+    .inactive-toggle {
+      cursor: not-allowed;
+    }
+    </style>
+    {% endif %}
   </head>
   <body class="jodel {% if post %}{{ post.color }}{% else %}{{ random_color }}{% endif %}{% if error %} error{% endif %}">
 
@@ -47,13 +54,13 @@
 
     (function (win,doc) {
       'use strict';
-      var siteURL = 'http://127.0.0.1:5000{{ request.path }}',
+      var siteURL = 'http://127.0.0.1:5000/',
           entries = doc.querySelectorAll('div.message'),
           i;
 
       if ( entries.length > 0 ) {
         for (i = 0; i < entries.length; i = i + 1) {
-          entries[i].innerHTML = entries[i].innerHTML.replace(/#(\S+)/g,'<a href="'+siteURL+'?hashtag=$1" class="hashtag" title="Find more posts tagged with #$1">#$1</a>');
+          entries[i].innerHTML = entries[i].innerHTML.replace(/#(\S+)/g,'<a href="'+siteURL+'hashtag/$1/recent" class="hashtag" title="Find more posts tagged with #$1">#$1</a>');
         }
       }
     }(this, this.document));

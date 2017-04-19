@@ -91,6 +91,10 @@ def setup():
         else:
             location = request.form.get('location')
             usage_mode = request.form.get('usage_mode')
+            if usage_mode == "write":
+                session['write_mode'] = True
+            else:
+                session['write_mode'] = False
         instance = main.start(loc=location)
         if instance is not None:
             get_db(instance.connection.get_location_city())
@@ -140,15 +144,18 @@ def channel(channel, mode):
     else:
         return redirect(url_for('index'))
 
-# TODO: check if function still feasable (API v3)
-@app.route('/user/<user_id>', methods=['GET'])
-def user_posts(user_id):
+@app.route('/hashtag/<hashtag>/<mode>', methods=['GET'])
+def hashtag(hashtag, mode):
     if instance is not None:
-        post_list = instance.get_user_posts(user_id)
+        after_post_id = request.args.get('after')
+        last_first_post = request.args.get('before')
+        post_list, first_post, last_post = instance._open_hashtag(hashtag=hashtag, mode=mode, after_post_id=after_post_id)
+        base_url = "/hashtag/" + hashtag + "/"
         if post_list:
-            return render_template('show_posts.html', posts=post_list)
+            return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post,
+            last_first_post=last_first_post, base_url=base_url, current_mode=mode, hashtag=hashtag)
         else:
-            return redirect(url_for('posts'))
+            return redirect(url_for('posts', mode='recent'))
     else:
         return redirect(url_for('index'))
 
@@ -184,9 +191,6 @@ def arguments():
     app.debug = args.debug
     cmd_mode = args.mode
     if args.location and len(args.location) is 1:
-        # Not needed anymore, only one argument now
-        #arg_str = ", ".join(args.location)
-        #cmd_loc = arg_str
         cmd_loc = args.location[0]
         print "Chosen location: " + cmd_loc
     elif args.location and len(args.location) is not 1:

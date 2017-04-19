@@ -8,6 +8,7 @@ TOOLS/*.pyc
 *.log
 tmp/
 mitmproxy/
+LICENSE
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

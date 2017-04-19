@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
+{% block title %}Channel List ({{ session.loc }}) - {{ session.title }}{% endblock %}
 {% block content %}
 <section class="jodel container">
   <div class="row">
     <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
       <div class="panel panel-default {{ random_color }}">
 
-        {% include "panel-heading.html" %}
+        {% include "panel_heading.html" %}
 
         <ul class="list-group" id="channels">
         {% for channel in channels %}

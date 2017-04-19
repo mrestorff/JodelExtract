@@ -51,4 +51,4 @@ Debugging:
 
 #### Credits
 
-The HMAC secret decryption and authorisation with the server is courtesy of Christian Fibich's project OJOC.
+The HMAC secret decryption and authorisation with the server are courtesy of Christian Fibich's project OJOC.
