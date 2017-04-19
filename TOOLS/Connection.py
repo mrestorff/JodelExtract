@@ -1,7 +1,7 @@
-#!/usr/bin/env python2
-# Modified Jodel Server connection methods by Malte Restorff
-# Original Copyright (C) 2016 by Christian Fibich
-# # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Jodel Server connection methods by Malte Restorff             #
+# Original by Christian Fibich                                  #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-"""TOOLS/Connection.py
+"""
+TOOLS/Connection.py
 Main connection class and helper constants and types
 """
 
@@ -40,7 +41,6 @@ import TOOLS.GeoIP
 import TOOLS.Config as cfg
 import main
 
-
 CFG_DIR = ".jodel"
 CFG_FILE = "jodel.cfg"
 API_URL_BASE = 'api.go-tellm.com'
@@ -53,9 +53,9 @@ LOCATION_RETRIES = 5
 # see https://wiki.python.org/moin/PythonDecoratorLibrary#Generating_Deprecation_Warnings
 # see http://code.activestate.com/recipes/391367-deprecated/
 def deprecated(func):
-    '''This is a decorator which can be used to mark functions
+    """ This is a decorator which can be used to mark functions
     as deprecated. It will result in a warning being emitted
-    when the function is used.'''
+    when the function is used. """
 
     @functools.wraps(func)
     def new_func(*args, **kwargs):
@@ -69,9 +69,7 @@ def deprecated(func):
 
 
 class APIMethodsType:
-    """
-    This class hold the parameters of the different API methods.
-    """
+    """ This class hold the parameters of the different API methods. """
 
     class APIMethod:
         """
@@ -122,18 +120,16 @@ class APIMethodsType:
     register              = APIMethod(method='POST', url='users/', payload=True, noauth=True)
     get_karma             = APIMethod(method='GET', url='users/karma/')
     get_config            = APIMethod(method='GET', url='user/config/', version='v3')
-    #get_posts             = APIMethod(method='GET', url='posts/')
     get_posts             = APIMethod(method='GET', url='posts/location/', get_parameters=True)
     get_combo             = APIMethod(method='GET', url='posts/location/combo/',version='v3',get_parameters=True)
-    #get_popular           = APIMethod(method='GET', url='posts/location/popular/')
-    #get_discussed         = APIMethod(method='GET', url='posts/location/discussed/')
     get_popular           = APIMethod(method='GET', url='posts/location/popular/', get_parameters=True) #new
     get_discussed         = APIMethod(method='GET', url='posts/location/discussed/', get_parameters=True) #new
+    get_images            = APIMethod(method='GET', url='pictures/location', version='v3', get_parameters=True) #new
+    get_popular_images    = APIMethod(method='GET', url='pictures/location/popular', version='v3', get_parameters=True) #new
+    get_discussed_images  = APIMethod(method='GET', url='pictures/location/discussed', version='v3', get_parameters=True) #new
     get_country_posts     = APIMethod(method='GET', url='feed/country/', country=True)
     get_post              = APIMethod(method='GET', url='posts/', postid=True)
-    #get_post              = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details?details=true&reversed=false') #new
-                            # NOTE: currently disabled and using old API v2
-                            # NOTE: "details=false" will only return comments, not the OP. "reversed" shows recent comments first
+    get_post_details      = APIMethod(method='GET', url='posts/', postid=True, version='v3', postfix='details') #new
     share                 = APIMethod(method='POST', url='posts/', postid=True, version='v3', postfix='share/') #new
     get_my_posts          = APIMethod(method='GET', url='posts/mine/')
     get_my_replies        = APIMethod(method='GET', url='posts/mine/replies/')
@@ -170,7 +166,7 @@ class PostType(enum.Enum):
     DISCUSSED speaks for itself
     COMBO     is a combination of the most recent and popular posts
     COUNTRY   just here to be orthogonal with the requests supported by
-              the API, not sure if it works
+              the API
     """
     ALL = 1
     POPULAR = 2
@@ -182,7 +178,8 @@ class PostType(enum.Enum):
 class Connection(object):
     """
     This class manages the connection to the Jodel/Tellm REST API.
-    It also manages the unique client ID, which is randomly generated,and which is stored in the file ~/.jodel/jodel.cfg.
+    It also manages the unique client ID, which is randomly generated, and stored
+    in the file ~/.jodel/jodel.cfg.
     Since the API employs HMAC, Connection.py appends the required
     headers to each message. Apparently, this is, up to now, only required
     when registering a new client ID.
@@ -197,16 +194,11 @@ class Connection(object):
             print message
 
     def __init__(self, location=None, citycc=None, uid=None, app_version=None, app_config=None):
-        """Location may be supplied as a dict required by the location-requiring
-           methods:
-
+        """
+        Location may be supplied as a dict required by the location-requiring methods:
             {'city':city, 'country':cc, 'loc_accuracy':100, 'loc_coordinates': {'lat':lat, 'lng':lon}}
-
-           citycc is the selected city name and its cc separated by a comma,as in:
-
-            citycc="Oulu,FI"
-
-           Use uid to supply an own unique ID to use for this connection.
+            citycc is the selected city name and its cc separated by a comma,as in: citycc="Oulu,FI"
+        Use uid to supply an own unique ID to use for this connection.
         """
         if app_version is None:
             app_version = TOOLS.Config.APP_VERSION
@@ -321,7 +313,7 @@ class Connection(object):
 
     def _location_from_citycc(self, citycc):
         """
-        Parse supplied City,Countrycode combination in the form of "Vienna,AT"
+        Parse supplied City, Countrycode combination in the form of "Hamburg, DE"
         and fetch it's physical coordinates from a reverse geo lookup service.
         """
         try:
@@ -374,11 +366,13 @@ class Connection(object):
         present or the token in the file is expired.
         An access token is needed for Bearer Authorization.
         It is sent with every request but the POST request to API_URL/users/
-        """
-        # cfg is a dict holding the access token and its parameters
+
+        cfg is a dict holding the access token and its parameters:
         # 'access_token'    : the token code itself
         # 'expiration_date' : the UNIX timestamp with which the token expires
         # 'token_tyoe'      : the kind of authorization to use the token with
+        """
+
         cfg = None
         home_path = os.path.expanduser('~')
         cfg_dir_path = os.path.join(home_path, CFG_DIR)
@@ -433,9 +427,7 @@ class Connection(object):
         return cfg
 
     def _authorize(self):
-        """
-        Adds or updates the authorization header of the session
-        """
+        """ Adds or updates the authorization header of the session """
         access_token_dict = self._get_access_token_dict()
         try:
             self.session.headers['Authorization'] = access_token_dict['token_type'] + ' ' + access_token_dict['access_token']
@@ -450,9 +442,9 @@ class Connection(object):
     def set_position(self, location=None):
         """
         Set the poster's location in the REST API
-        Don't know if this is necessary, but the app does it, so we do it, too.
 
-        location: The location to change to. If this is not specified,the location property of the Connection object is used.
+        location: The location to change to. If this is not specified, the location
+        property of the Connection object is used.
         """
 
         if location is None:
@@ -477,13 +469,11 @@ class Connection(object):
         return register_data
 
     def karma(self):
-        """
-        Retrieve the client uid's karma value from the REST API
-        """
+        """ Retrieve the client uid's karma value from the REST API """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_karma)
 
     def my_posts(self):
-        # TODO update list on my_posts() return parameters
+        # TODO: update list on my_posts() return parameters
         """
         Retrieve a list of the client uid's posts.
         The list is embedded in a dict as follows:
@@ -506,33 +496,27 @@ class Connection(object):
         return self._api_request(TOOLS.Connection.APIMethodsType.get_my_posts)
 
     def get_config(self):
-        """ Retrieves this client_uid's config, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this client_uid's config """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_config)
 
     def my_combo_posts(self):
-        """ Retrieves this client_uid's mixed posts, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this client_uid's mixed posts, returned as dict in the same form as by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_my_combo)
 
     def my_popular_posts(self):
-        """ Retrieves this client_uid's most upvoted posts, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this client_uid's most upvoted posts, returned as dict in the same form as by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_my_popular)
 
     def my_discussed_posts(self):
-        """ Retrieves this client_uid's most replied posts, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this client_uid's most replied posts, returned as dict in the same form as by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_my_discussed)
 
     def my_replies(self):
-        """ Retrieves this client_uid's replies to posts, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this client_uid's replies to posts, returned as dict in the same form as by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_my_replies)
 
     def my_voted_posts(self):
-        """ Retrieves the posts this client_uid voted on, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves the posts this client_uid voted on, returned as dict in the same form as by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_my_votes)
 
     def get_captcha(self):
@@ -544,55 +528,46 @@ class Connection(object):
         return self._api_request(TOOLS.Connection.APIMethodsType.post_captcha,payload={'key':key, 'answer':answer})
 
     def my_pinned_posts(self):
-        """ Retrieves the posts this client_uid pinned, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves the posts this client_uid pinned, returned as dict in the same form as by my_posts()"""
         return self._api_request(TOOLS.Connection.APIMethodsType.get_pinned)
 
     # MAIN FEED METHODS #
     def combo_posts(self):
-        """ Retrieves a combination of this location's most recent and most upvoted posts, returned
-        as dict in the same form as by my_posts()"""
+        """
+        Retrieves a combination of this location's most recent and most upvoted posts, returned as dict:
+        {'posts': [{'recent': ...}, {'discussed': ...}, {'popular': ...}]}
+        """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_combo,get_parameters={'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'stickies':'false'})
 
     def recent_posts(self, after_post_id): #new
-        """ Retrieves the most recent posts after post_id xyz, returned as dict in the same form
-        as by my_posts()"""
+        """
+        Retrieves the most recent posts after post_id xyz, returned as dict in the same form as by my_posts().
+        If 'after' is a post_id, the posts after that post will be displayed.
+        """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_posts,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
 
     def popular_posts(self, after_post_id): #new
-        """ Retrieves this location's most upvoted posts, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this location's most upvoted posts, returned as dict in the same form as by my_posts() """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_popular,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
 
     def discussed_posts(self, after_post_id): #new
-        """ Retrieves this location's most commented posts, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves this location's most commented posts, returned as dict in the same form as by my_posts() """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed,get_parameters={'after': after_post_id, 'lat': self.location['loc_coordinates']['lat'], 'lng': self.location['loc_coordinates']['lng'], 'home':'false'})
 
-    @deprecated # NOTE This can be deleted, merge with new functions complete
-    def recent_posts_old(self):
-        """ Retrieves this location's most recent posts, returned as dict in the same form as
-        by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_posts)
+    # IMAGE FEED METHODS #
+    def recent_images(self, after_post_id): #new
+        """ Retrieves the most recent images after post_id xyz, returned as dict in the same form as by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_images, get_parameters={'after': after_post_id, 'limit': None, 'home':'false'})
 
-    @deprecated # NOTE This can be deleted, merge with new functions complete
-    def popular_posts_old(self):
-        """ Retrieves this location's most upvoted posts, returned as dict in the same form as
-        by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_popular)
+    def popular_images(self, after_post_id): #new
+        """ Retrieves the most popular images after post_id xyz, returned as dict in the same form as by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_popular_images, get_parameters={'after': after_post_id, 'limit': None, 'home':'false'})
 
-    @deprecated # NOTE This can be deleted, merge with new functions complete
-    def discussed_posts_old(self):
-        """ Retrieves this location's most commented posts, returned as dict in the same form as
-        by my_posts()"""
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed)
+    def discussed_images(self, after_post_id): #new
+        """ Retrieves the most discussed images after post_id xyz, returned as dict in the same form as by my_posts()"""
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_discussed_images, get_parameters={'after': after_post_id, 'limit': None, 'home':'false'})
 
     # CHANNEL METHODS #
-    @deprecated # NOTE This can be deleted, merge with new functions complete
-    def get_channel_old(self,channel):
-        """ Retrieves posts containing a given hashtag """
-        return self._api_request(TOOLS.Connection.APIMethodsType.get_channel,get_parameters={'channel': channel})
-
     def get_channel(self, channel, after_post_id): #new
         """ Retrieves posts containing a given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel,get_parameters={'channel': channel, 'after': after_post_id})
@@ -601,7 +576,7 @@ class Connection(object):
         """ Retrieves popular posts containing a given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_popular,get_parameters={'channel': channel, 'after': after_post_id})
 
-    def get_channel_discussed(self, channel, after_post_id):# #new
+    def get_channel_discussed(self, channel, after_post_id): #new
         """ Retrieves discussed posts containing a given hashtag """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_channel_discussed,get_parameters={'channel': channel, 'after': after_post_id})
 
@@ -651,9 +626,24 @@ class Connection(object):
         return self._api_request(TOOLS.Connection.APIMethodsType.delete_post,postid=postid)
 
     def particular_post(self, postid):
-        """ Retrieves a single post and its replies, returned as dict in the same form as
-        by my_posts()"""
+        """ Retrieves a single post and its replies, returned as dict in the same form as by my_posts() """
         return self._api_request(TOOLS.Connection.APIMethodsType.get_post,postid=postid)
+
+    def particular_post_details(self, postid, reply=None, details='true', reversed='false'): #new
+        """
+        Retrieves a single post and a maximum of 50 replies, returned as dict in the form:
+        {
+            "next": unix_timestamp_in_milliseconds,
+            "remaining": remaining_comments_currently_not_shown,
+            "readonly": boolean {True, False},
+            "shareable": boolean {True, False},
+            "replies": [{reply1_here_see_my_posts()_for_format}, {reply2,...}],
+            "details": {post_details_see_my_posts()_for_format}
+        }
+        'next':         is a Unix timestamp (milliseconds), used for the 'reply' parameter in this function
+        'remaining':    the remaining replies that are currently not shown (get them via 'reply')
+        """
+        return self._api_request(TOOLS.Connection.APIMethodsType.get_post_details, postid=postid, get_parameters={'details': details, 'reply': reply, 'reversed': reversed})
 
     def share(self, postid): # TODO: Implement share function in GUI
         """ Share the post with the given postid """
@@ -714,7 +704,7 @@ class Connection(object):
         """ Perform a request to the REST API.
             The action is a dict from the APIMethodsType Class.
             The kwargs need to contain the parameters required by that
-            method."""
+            method. """
 
         if action is None:
             return None

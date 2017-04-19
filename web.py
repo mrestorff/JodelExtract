@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import os.path
 from flask import Flask, session, request, url_for, redirect, render_template, g, abort
 import sqlite3
@@ -92,7 +92,7 @@ def setup():
             location = request.form.get('location')
             usage_mode = request.form.get('usage_mode')
         instance = main.start(loc=location)
-        if not instance == None:
+        if instance is not None:
             get_db(instance.connection.get_location_city())
             session['loc'] = instance.connection.get_location_string()
             return redirect(url_for('posts', mode='recent'))
@@ -101,10 +101,11 @@ def setup():
 
 @app.route('/posts/<mode>', methods=['GET'])
 def posts(mode):
-    if not instance == None:
+    if instance is not None:
+        images = request.args.get('images')
         after_post_id = request.args.get('after')
         last_first_post = request.args.get('before')
-        post_list, first_post, last_post = instance.posts(mode=mode, after_post_id=after_post_id)
+        post_list, first_post, last_post = instance.posts(mode=mode, after_post_id=after_post_id, images=images)
         base_url = "/posts/"
         return render_template('show_posts.html', posts=post_list, first_post=first_post, last_post=last_post,
         last_first_post=last_first_post, base_url=base_url, current_mode=mode)
@@ -113,7 +114,7 @@ def posts(mode):
 
 @app.route('/post/<post_id>', methods=['GET'])
 def post(post_id):
-    if not instance == None:
+    if instance is not None:
         channel = request.args.get('channel')
         comment_list, post_data = instance._open_post(post_id)
         if post_data:
@@ -126,7 +127,7 @@ def post(post_id):
 @app.route('/channel/', defaults={'channel': 'None', 'mode': 'recent'})
 @app.route('/channel/<channel>/<mode>', methods=['GET'])
 def channel(channel, mode):
-    if not instance == None:
+    if instance is not None:
         if channel in instance.channel_name_list:
             after_post_id = request.args.get('after')
             last_first_post = request.args.get('before')
@@ -142,7 +143,7 @@ def channel(channel, mode):
 # TODO: check if function still feasable (API v3)
 @app.route('/user/<user_id>', methods=['GET'])
 def user_posts(user_id):
-    if not instance == None:
+    if instance is not None:
         post_list = instance.get_user_posts(user_id)
         if post_list:
             return render_template('show_posts.html', posts=post_list)
@@ -186,7 +187,7 @@ def arguments():
         # Not needed anymore, only one argument now
         #arg_str = ", ".join(args.location)
         #cmd_loc = arg_str
-        cmd_loc = args.location
+        cmd_loc = args.location[0]
         print "Chosen location: " + cmd_loc
     elif args.location and len(args.location) is not 1:
         print "Invalid location input!"

@@ -1,18 +1,17 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-
 import json
 import tempfile
-from StringIO import StringIO
+#from StringIO import StringIO
 import array
 import os
 import shutil
-import pprint
-import argparse
+#import pprint
+#import argparse
 import sys
 import appdirs
 import datetime
-import requests
+#import requests
 from time import gmtime, strftime
 import TOOLS.Connection
 import TOOLS.PostHandler
@@ -68,7 +67,7 @@ class JodelExtract():
 
     def initialize(self, citycc=None, location=None, initial_channels=None, mode=None):
         """Set up the connection to Jodel
-           citycc  A location in City, CC format as in "Vienna, AT"
+           citycc  A location in City, CC format as in "Hamburg, DE"
            """
 
         # make a new connection object
@@ -93,43 +92,43 @@ class JodelExtract():
         if mode is not None:
             self.posts_mode = mode
 
-        #self.posts(mode=self.posts_mode) # => calls posts further down the code
-        #self.my_posts()
-        #self.my_replies()
-        #self.my_voted_posts()
-        #self.my_pinned_posts()
-
         return False
 
 
 # ----------------------------------------------------------------------
 # Post fetching methods
 # ----------------------------------------------------------------------
-    def posts(self, mode=None, after_post_id=None, post_data_dict=None):
+    def posts(self, mode=None, after_post_id=None, images=False, post_data_dict=None):
         """ Fetch post data from API if post_data_dict not given. """
 
         if mode is None:
-            #mode = self.posts_mode_dict[post_category_type.POSTS]
-            mode = TOOLS.Connection.PostType.ALL
+            mode = "recent"
 
-        # Fetch posts from the API if no data is supplied
         if post_data_dict is None:
-            if mode == TOOLS.Connection.PostType.POPULAR or mode == "popular":
-                post_data_dict = self.connection.popular_posts(after_post_id)
-            elif mode == TOOLS.Connection.PostType.DISCUSSED or mode == "discussed":
-                post_data_dict = self.connection.discussed_posts(after_post_id)
-            elif mode == TOOLS.Connection.PostType.COMBO or mode == "combo":
-                raw_post_data_dict = self.connection.combo_posts()
-                post_data_dict = {'posts': sorted(raw_post_data_dict['replied'] +
-                        raw_post_data_dict['voted'] +
-                        raw_post_data_dict['recent'],key=timesort,reverse=True)}
-            elif mode == TOOLS.Connection.PostType.ALL or mode == "recent":
-                post_data_dict = self.connection.recent_posts(after_post_id)
-            elif mode == "country": # TODO implement or delete function
-                post_data_dict = self.connection.country_feed()
-                print post_data_dict
+            if images:
+                if mode == "popular":
+                    post_data_dict = self.connection.popular_images(after_post_id)
+                elif mode == "discussed":
+                    post_data_dict = self.connection.discussed_images(after_post_id)
+                else:
+                    post_data_dict = self.connection.recent_images(after_post_id)
             else:
-                post_data_dict = self.connection.recent_posts(after_post_id)
+                if mode == "popular":
+                    post_data_dict = self.connection.popular_posts(after_post_id)
+                elif mode == "discussed":
+                    post_data_dict = self.connection.discussed_posts(after_post_id)
+                elif mode == "combo":
+                    raw_post_data_dict = self.connection.combo_posts()
+                    # TODO: update this function, isn't used atm
+                    post_data_dict = {'posts': sorted(raw_post_data_dict['replied'] +
+                            raw_post_data_dict['voted'] +
+                            raw_post_data_dict['recent'],key=timesort,reverse=True)}
+                elif mode == "recent":
+                    post_data_dict = self.connection.recent_posts(after_post_id)
+                elif mode == "country": # TODO implement or delete function
+                    post_data_dict = self.connection.country_feed()
+                else:
+                    post_data_dict = self.connection.recent_posts(after_post_id)
 
         if post_data_dict is False:
             print "Error! Could not fetch post data."
@@ -165,17 +164,17 @@ class JodelExtract():
             mode = TOOLS.Connection.PostType.ALL
 
         # Fetch posts from the API if no data is supplied
-        if mode == TOOLS.Connection.PostType.POPULAR or mode == "popular":
+        if mode == "popular":
             channel_data_dict = self.connection.get_channel_popular(channel, after_post_id)
-        elif mode == TOOLS.Connection.PostType.DISCUSSED or mode == "discussed":
+        elif mode == "discussed":
             channel_data_dict = self.connection.get_channel_discussed(channel, after_post_id)
-        elif mode == TOOLS.Connection.PostType.COMBO or mode == "combo":
+        elif mode == "combo":
             channel_data_dict = self.connection.get_channel(channel)
             raw_channel_data_dict = self.connection.get_channel(channel)
             channel_data_dict = {'posts': sorted(#raw_channel_data_dict['replied'] +
                     #raw_channel_data_dict['voted'] +
                     raw_channel_data_dict['recent'],key=timesort,reverse=True)}
-        elif mode == TOOLS.Connection.PostType.ALL or mode == "recent":
+        elif mode == "recent":
             channel_data_dict = self.connection.get_channel_recent(channel, after_post_id)
         else:
             channel_data_dict = self.connection.get_channel_recent(channel, after_post_id)
@@ -235,24 +234,69 @@ class JodelExtract():
     def _open_post(self, post_id, main=None):
         """ Update original post and load comments from API """
 
-        this_post = post = self.connection.particular_post(post_id)
-
         version = "v2"
-        if cfg.PRINT_API:
-            print post
 
-        if this_post is None:
-            print "Could not fetch " + post_id
-            for post in self.post_data_dict['posts']:
-                if post['post_id'] == post_id:
-                    this_post = post
-                    break
-        elif this_post is False:
-            return False, post_id
-        else:
-            pass
+        if version is not "v3_new":
+            this_post = post = self.connection.particular_post(post_id)
 
-        if version is "v3":
+            if cfg.PRINT_API:
+                print post
+
+            if this_post is None:
+                print "Could not fetch " + post_id
+                for post in self.post_data_dict['posts']:
+                    if post['post_id'] == post_id:
+                        this_post = post
+                        break
+            elif this_post is False:
+                return False, post_id
+            else:
+                pass
+
+        if version is "v3_new":
+            # Post API v3 paging implementation
+            #next_reply_timestamp = datetime.datetime.utcfromtimestamp(reply).strftime("%Y-%m-%d %H:%M:%S")
+            this_post = post = self.connection.particular_post_details(post_id)
+
+            if cfg.PRINT_API:
+                print post
+
+            if this_post is None:
+                print "Could not fetch " + post_id
+                # NOTE: this won't work with new APIv3 paging method
+                for post in self.post_data_dict['posts']:
+                    if post['post_id'] == post_id:
+                        this_post = post
+                        break
+            elif this_post is False:
+                return False, post_id
+            else:
+                pass
+
+            this_post = this_post['details']
+            temp_post_list = []
+            if this_post['post_id'] in self.post_list:
+                p = self.post_list[this_post['post_id']]
+                p.update(this_post)
+            else:
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                self.post_list[this_post['post_id']] = p
+
+            children_posts_list = post.get('replies')
+            comments_list = []
+            if children_posts_list is not None and len(children_posts_list) > 0:
+                for reply in children_posts_list:
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                if post['next'] is not None:
+                    # NOTE: make for loop out of this
+                    print "Next post to display: " + str(post['next'])
+                    print str(len(children_posts_list)) + " comments displayed, " + str(post['remaining']) + " remaining"
+                    children_posts_list_two = (self.connection.particular_post_details(post_id, reply=post['next']).get('replies'))
+                    for reply in children_posts_list_two:
+                        comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+            return comments_list, self.post_list[this_post['post_id']]
+
+        elif version is "v3":
             # Post API v3
             this_post = this_post['details']
             temp_post_list = []
@@ -264,7 +308,6 @@ class JodelExtract():
                 self.post_list[this_post['post_id']] = p
 
             children_posts_list = post.get('replies')
-            response_index = 0
             comments_list = []
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:

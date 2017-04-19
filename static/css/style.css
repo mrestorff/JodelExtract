@@ -40,6 +40,7 @@ a:hover {
   outline: none;
 }
 main {
+  /* TODO: smaller padding at top on small computers for setup etc */
   padding: 50px 0;
   min-width: 400px;
 }
@@ -90,7 +91,7 @@ ul.navbar-nav > li {
 
 /* --------------- Setup Page --------------- */
 .container.setup {
-  margin-top: 70px;
+  margin-top: 50px;
   border-radius: 4px;
   box-shadow: 0 1px 3px 1px rgba(0,0,0,0.05);
 }
@@ -239,7 +240,6 @@ select:-webkit-autofill:focus {
   text-decoration: none;
 }
 .jodel.container > .row > .col-md-6.col-xs-8 > .panel.panel-default > .panel-heading .channel {
-  text-transform: capitalize;
   background: none;
   font-weight: 700;
   font-size: 16px;
@@ -334,8 +334,10 @@ select:-webkit-autofill:focus {
 #jodels-list .list-group-item img.post_image {
   -webkit-filter: blur(30px);
   -moz-filter: blur(30px);
+  -ms-filter: "blur(30px)";
 	filter: blur(30px);
   -moz-transform: scale(1.2);
+  -ms-transform: scale(1.0);
   -webkit-transform: scale(1.2);
   transform: scale(1.2);
   overflow: hidden;
@@ -343,11 +345,13 @@ select:-webkit-autofill:focus {
 #jodels-list .list-group-item:hover img.post_image {
   -webkit-filter: blur(0px);
   -moz-filter: blur(0px);
+  -ms-filter: "blur(0px)";
 	filter: blur(0px);
   -moz-transform: scale(1.0);
+  -ms-transform: scale(1.0);
   -webkit-transform: scale(1.0);
   transform: scale(1.0);
-  /*transition: 0.05s ease-out 0s;*/
+  /*transition: filter 0.05s ease-out 0s;*/
 }
 .list-group-item .row.image {
   z-index: 1;
@@ -497,6 +501,7 @@ select:-webkit-autofill:focus {
 #channels li img {
   -webkit-filter: blur(5px) brightness(60%);
   -moz-filter: blur(5px) brightness(60%);
+  -ms-filter: "blur(5px) brightness(60%)";
 	filter: blur(5px) brightness(60%);
   width: 110%;
   top: -25%;
@@ -507,6 +512,7 @@ select:-webkit-autofill:focus {
 #channels li:hover img {
   -webkit-filter: blur(5px) brightness(90%);
   -moz-filter: blur(5px) brightness(90%);
+  -ms-filter: "blur(5px) brightness(90%)";
 	filter: blur(5px) brightness(90%);
   transition: all 0.2s;
 }

@@ -44,6 +44,19 @@
       });
       $("img.lazy").show().lazyload();
     });
+
+    (function (win,doc) {
+      'use strict';
+      var siteURL = 'http://127.0.0.1:5000{{ request.path }}',
+          entries = doc.querySelectorAll('div.message'),
+          i;
+
+      if ( entries.length > 0 ) {
+        for (i = 0; i < entries.length; i = i + 1) {
+          entries[i].innerHTML = entries[i].innerHTML.replace(/#(\S+)/g,'<a href="'+siteURL+'?hashtag=$1" class="hashtag" title="Find more posts tagged with #$1">#$1</a>');
+        }
+      }
+    }(this, this.document));
     </script>
   </body>
 </html>

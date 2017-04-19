@@ -21,7 +21,8 @@ class Post(object):
         """ post        Post data
             tempdir     Directory for downloaded images
             main_window Reference to main JodelExtract class
-            connection  server connection from connection.py
+            connection  Server connection from connection.py
+            channel     Flag if post lives inside a channel (True) or not (False)
             userno      Number of user in post
             reply       Flag if this is an original post (False) or a reply (True)"""
 
@@ -35,7 +36,7 @@ class Post(object):
         if cfg.DEBUG:
             print post
 
-        # Workaround for API not returning child_count
+        # Workaround for API sometimes not returning child_count
         if not self.reply and not 'child_count' in self.post.keys():
             print_verbose("NO child_count FOUND IN DICT!")
             print_verbose(post)
@@ -66,12 +67,15 @@ class Post(object):
         else:
             print_verbose("Handling post " + post['post_id'])
 
+        self.get_data()
+
         # create color hex code
         colorspec = {'#06A3CB':'blue', '#8ABDB0':'turquoise', '#9EC41C':'green', '#DD5F5F':'red', '#FF9908':'orange', '#FFBA00':'yellow'}
         if post['color']:
             self.color = colorspec.get('#' + post['color'], 'grey')
 
         self.image_url = image_url = post.get('image_url')
+        self.thumb_url = post.get('thumbnail_url')
         if (image_url is None):
             pass
         elif not cfg.DBG_NO_IMAGES:
@@ -99,15 +103,11 @@ class Post(object):
                         for block in r.iter_content(1024):
                             handle.write(block)
                     #local_image_url = "file:" + urllib.pathname2url(path)
-                    #print_verbose("Downloaded to: " + local_image_url)
-
                 except requests.exceptions.ConnectionError as e:
                     print "failed: " + str(e)
 
-        #self.save_post()
-        self.get_data()
-
     def get_data(self):
+        """ Handle changing post data so it can be called again by update() """
         self.named_distance = named_distance(self.post['distance'])
         date = datetime.datetime.strptime(self.post['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
         self.date = date.strftime('%Y-%m-%d at %H:%M:%S')
@@ -149,14 +149,8 @@ class Post(object):
 
         print_verbose("Saving post " + self.post['post_id'] + " to " + filename)
 
-    def print_post(self):
-        date = datetime.datetime.strptime(self.post['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        date = date.strftime('%Y-%m-%d at %H:%M:%S')
-        print ""
-        print " ######## VOTES: "+str(self.post['vote_count'])+" #### DISTANCE: "+named_distance(self.post['distance'])+" #### CREATED AT: "+date+" ########"
-        print unicodedata.normalize('NFKD', self.post['message']).encode('ascii', 'ignore') + "\n\n"
-
     def strip_empty_lines(self, s):
+        """ Delete empty lines before and after text """
         lines = s.splitlines()
         while lines and not lines[0].strip():
             lines.pop(0)
