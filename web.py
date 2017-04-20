@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os.path
 from flask import Flask, session, request, url_for, redirect, render_template, g, abort
-import sqlite3
+#import sqlite3
 import random
 import threading
 import webbrowser
@@ -19,25 +19,25 @@ cmd_mode = None
 # SQL database setup and connection
 # TODO: Set up SQL database
 # ----------------------------------------------
-def get_db(loc):
-    path = os.path.join(cfg.DATABASE_PATH, loc + ".db")
-    db = getattr(g, '_database', None)
-    if db is None:
-        if not os.path.isfile(path):
-            db = g._database = sqlite3.connect(path)
-            with app.open_resource('schema.sql', mode='r') as f:
-                db.cursor().executescript(f.read())
-            db.commit()
-            print("Initialized the database")
-        else:
-            db = g._database = sqlite3.connect(path)
-    return db
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+#def get_db(loc):
+#    path = os.path.join(cfg.DATABASE_PATH, loc + ".db")
+#    db = getattr(g, '_database', None)
+#    if db is None:
+#        if not os.path.isfile(path):
+#            db = g._database = sqlite3.connect(path)
+#            with app.open_resource('schema.sql', mode='r') as f:
+#                db.cursor().executescript(f.read())
+#            db.commit()
+#            print("Initialized the database")
+#        else:
+#            db = g._database = sqlite3.connect(path)
+#    return db
+#
+#@app.teardown_appcontext
+#def close_connection(exception):
+#    db = getattr(g, '_database', None)
+#    if db is not None:
+#        db.close()
 
 # ----------------------------------------------
 # Request and site methods
