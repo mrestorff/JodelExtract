@@ -97,7 +97,7 @@ def setup():
                 session['write_mode'] = False
         instance = main.start(loc=location)
         if instance is not None:
-            get_db(instance.connection.get_location_city())
+            #get_db(instance.connection.get_location_city())
             session['loc'] = instance.connection.get_location_string()
             return redirect(url_for('posts', mode='recent'))
         else:
