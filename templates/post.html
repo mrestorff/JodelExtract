@@ -34,7 +34,8 @@
             </div>
             <div class="row {% if comment.image_url %}image {% endif %}time unselectable" unselectable="on">
               <div class="col-md-6 col-xs-6 time-block">
-                <img src="/static/images/time.png" class="icon time"><span class="time" title="{{ post.date }}">{{ comment.timedelta }}</span>
+                <img src="/static/images/time.png" class="icon time" title="{{ comment.date }} by replier no #{{ comment.replier }}">
+                <span class="time" title="{{ comment.date }} by replier no #{{ comment.replier }}">{{ comment.timedelta }}</span>
               </div>
               {% if comment.by_oj %}
               <div class="col-md-6 col-xs-6 oj-block">
@@ -43,7 +44,7 @@
               {% elif comment.post.got_thanks %}
               <div class="col-md-6 col-xs-6 oj-block">
                 <!-- FIXME: replace crown incon with heart -->
-                <span class="oj">Thanks!</span><img class="icon-oj" src="/static/images/crownIcon.png" srcset="/static/images/crownIcon@2x.png 2x">
+                <span class="oj">Thanks!</span><img class="icon-oj" src="/static/images/heart.png" srcset="/static/images/heart@2x.png 2x">
               </div>
               {% endif %}
             </div>

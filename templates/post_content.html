@@ -1,5 +1,5 @@
 <li class="list-group-item {{ post.color }} parent {% if post.image_url %}image{% endif %}" id="{{ post.id }}">
-  {% if not post.system_message and base_url %}<a href="{{ url_for('post', post_id=post.id) }}{% if channel %}?channel={{ channel }}{% endif %}">{% endif %}
+  {% if not post.system_message and base_url %}<a href="{{ url_for('post', post_id=post.id) }}{% if channel %}?channel={{ channel }}{% elif hashtag %}?hashtag={{ hashtag }}{% endif %}">{% endif %}
   {% if post.image_url %}
   <img data-original="{{ post.image_url }}" alt="{{ post.post.message }}" class="post_image desktop lazy" />
   <noscript>

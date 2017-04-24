@@ -266,10 +266,10 @@ class JodelExtract():
             return temp_post_list, first_post.id, last_post.id
 
 
-    def _open_post(self, post_id, main=None):
+    def _open_post(self, post_id, main=None, channel=None):
         """ Update original post and load comments from API """
 
-        version = "v2"
+        version = "v3_new" # NOTE: CAUTION V3 ACTIVE
 
         if version is not "v3_new":
             this_post = post = self.connection.particular_post(post_id)
@@ -314,20 +314,22 @@ class JodelExtract():
                 p = self.post_list[this_post['post_id']]
                 p.update(this_post)
             else:
-                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection,channel=channel)
                 self.post_list[this_post['post_id']] = p
 
             children_posts_list = post.get('replies')
             comments_list = []
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
-                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,
+                    self.connection,original_post_id=this_post['post_id'],reply=True,channel=channel))
                 if post['next'] is not None:
                     # NOTE: make for loop out of this
                     children_posts_list_two = (self.connection.particular_post_details(post_id, reply=post['next']).get('replies'))
                     for reply in children_posts_list_two:
-                        comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
-                print str(len(comments_list)) + " comments displayed, " + str(post.get('remaining', default="none")) + " remaining"
+                        comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,
+                        self.connection,original_post_id=this_post['post_id'],reply=True,channel=channel))
+                print str(len(comments_list)) + " of " + str(this_post.get('child_count')) + " displayed" #" comments displayed, str(post.get('remaining', "none")) + " remaining"
             return comments_list, self.post_list[this_post['post_id']]
 
         elif version is "v3":
@@ -338,14 +340,15 @@ class JodelExtract():
                 p = self.post_list[this_post['post_id']]
                 p.update(this_post)
             else:
-                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection,channel=channel)
                 self.post_list[this_post['post_id']] = p
 
             children_posts_list = post.get('replies')
             comments_list = []
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
-                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,
+                    self.connection,original_post_id=this_post['post_id'],reply=True,channel=channel))
                 print str(len(comments_list)) + " comments displayed"
             return comments_list, self.post_list[this_post['post_id']]
 
@@ -356,14 +359,15 @@ class JodelExtract():
                 p = self.post_list[this_post['post_id']]
                 p.update(this_post)
             else:
-                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection)
+                p = TOOLS.PostHandler.Post(this_post,self.tempdir,self,self.connection,channel=channel)
                 self.post_list[this_post['post_id']] = p
 
             children_posts_list = this_post.get('children')
             comments_list = []
             if children_posts_list is not None and len(children_posts_list) > 0:
                 for reply in children_posts_list:
-                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,self.connection,reply=True))
+                    comments_list.append(TOOLS.PostHandler.Post(reply,self.tempdir,self,
+                    self.connection,original_post_id=this_post['post_id'],reply=True,channel=channel))
                 print str(len(comments_list)) + " comments displayed"
             return comments_list, self.post_list[this_post['post_id']]
 

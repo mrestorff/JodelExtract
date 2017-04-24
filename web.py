@@ -120,7 +120,9 @@ def posts(mode):
 def post(post_id):
     if instance is not None:
         channel = request.args.get('channel')
-        comment_list, post_data = instance._open_post(post_id)
+        if channel is None:
+            channel = request.args.get('hashtag')
+        comment_list, post_data = instance._open_post(post_id, channel=channel)
         if post_data:
             return render_template('post.html', post=post_data, comments=comment_list, channel=channel)
         else:

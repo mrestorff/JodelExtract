@@ -412,7 +412,7 @@ select:-webkit-autofill:focus {
   line-height: 70px;
   padding-left: 16%;
 }
-#jodels-list .list-group-item.parent:hover .row.image .message {
+#jodels-list .list-group-item.parent:hover .row.image .message, #jodel-detail .list-group-item.parent .row.image .message {
   opacity: 0;
 }
 
@@ -494,7 +494,6 @@ select:-webkit-autofill:focus {
   margin-right: 5px;
 }
 .list-group-item .row .oj-block .oj {
-  opacity: 0.6;
   font-size: 11px; /* orig: 9.5px */
 }
 .list-group-item .row .location-block {
@@ -552,6 +551,7 @@ select:-webkit-autofill:focus {
   left: 0;
   bottom: 0;
   right: 0;
+  transition: all 0.2s;
 }
 #channels .square-content .row {
    z-index: 2;

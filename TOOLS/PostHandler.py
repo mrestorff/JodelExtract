@@ -17,14 +17,14 @@ def print_verbose(message):
 # Supplying the whole thing including comment list to post object might be sensible, because '"next": null'
 # and '"remaining": 0' need to be supplied as well for comment pagination
 class Post(object):
-    def __init__(self,post,tempdir,main_window,connection,channel=False,userno=None,reply=False):
-        """ post        Post data
-            tempdir     Directory for downloaded images
-            main_window Reference to main JodelExtract class
-            connection  Server connection from connection.py
-            channel     Flag if post lives inside a channel (True) or not (False)
-            userno      Number of user in post
-            reply       Flag if this is an original post (False) or a reply (True)"""
+    def __init__(self,post,tempdir,main_window,connection,reply=False,original_post_id=None,channel=False):
+        """ post                Post data
+            tempdir             Directory for downloaded images
+            main_window         Reference to main JodelExtract class
+            connection          Server connection from connection.py
+            channel             Flag if post lives inside a channel (string) or not (False)
+            original_post_id    If post is a reply, this is the parent's post_id
+            reply               Flag if this is an original post (False) or a reply (True)"""
 
         self.post = post
         self.id = post.get('post_id')
@@ -63,7 +63,7 @@ class Post(object):
                 self.by_oj = True
                 self.replier = 0
             elif self.post.get('replier'):
-                self.replier = post['replier']
+                self.replier = self.post.get('replier', "XX")
         else:
             print_verbose("Handling post " + post['post_id'])
 
@@ -81,13 +81,18 @@ class Post(object):
         elif not cfg.DBG_NO_IMAGES:
             # Download the image into the temp folder (if not yet downloaded)
             image_headers = post.get('image_headers')
+            if reply and original_post_id is not None:
+                filename = str(original_post_id) + "_comment_" + post['post_id'] + ".jpg"
+            else:
+                filename = post['post_id'] + ".jpg"
             if not channel:
-                path = os.path.join(self.tempdir, post['post_id'] + ".jpg")
+                path = os.path.join(self.tempdir, filename)
             else:
                 folder_path = os.path.join(self.tempdir, channel)
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
-                path = os.path.join(folder_path, post['post_id'] + ".jpg")
+                path = os.path.join(folder_path, filename)
+
             if not (os.path.exists(path) and os.path.isfile(path)):
                 print_verbose("Downloading image https:" + image_url + "... ")
                 try:
@@ -102,7 +107,8 @@ class Post(object):
 
                         for block in r.iter_content(1024):
                             handle.write(block)
-                    #local_image_url = "file:" + urllib.pathname2url(path)
+                    #local_image_url = "file:" + urllib.pathname2url(path).unicode() # unicode conversion issues
+                    #print_verbose("Downloaded to: " + local_image_url)
                 except requests.exceptions.ConnectionError as e:
                     print "failed: " + str(e)
 
