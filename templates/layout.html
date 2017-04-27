@@ -65,6 +65,17 @@
         }
       }
     }(this, this.document));
+
+    // Comment list sorting options
+    var options = {
+      valueNames: [
+        'votes',
+        { name: 'time', attr: 'data-timestamp' },
+        { data: ['id'] }
+      ],
+      listClass: 'list-group'
+    };
+    var commentList = new List('panel', options);
     </script>
   </body>
 </html>

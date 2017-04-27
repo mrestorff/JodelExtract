@@ -5,7 +5,7 @@
 <section class="jodel container">
   <div class="row">
     <div class="col-md-6 col-xs-8 col-md-offset-3 col-xs-offset-2">
-      <div class="panel panel-default">
+      <div class="panel panel-default" id="panel">
 
         {% include "panel_heading.html" %}
 
@@ -14,7 +14,7 @@
           {% include "post_content.html" %}
 
           {% for comment in comments %}
-          <li class="list-group-item {{ comment.color }} child {% if comment.image_url %}image{% endif %}" id="{{ comment.id }}">
+          <li class="list-group-item {{ comment.color }} child {% if comment.image_url %}image{% endif %}" data-id="{{ comment.id }}">
             {% if comment.image_url %}
             <img src="{{ comment.image_url }}" alt="{{ comment.post.message }}" class="post_image desktop" />
             {% endif %}
@@ -35,7 +35,7 @@
             <div class="row {% if comment.image_url %}image {% endif %}time unselectable" unselectable="on">
               <div class="col-md-6 col-xs-6 time-block">
                 <img src="/static/images/time.png" class="icon time" title="{{ comment.date }} by replier no #{{ comment.replier }}">
-                <span class="time" title="{{ comment.date }} by replier no #{{ comment.replier }}">{{ comment.timedelta }}</span>
+                <span class="time" data-timestamp="{{ comment.date }}" title="{{ comment.date }} by replier no #{{ comment.replier }}">{{ comment.timedelta }}</span>
               </div>
               {% if comment.by_oj %}
               <div class="col-md-6 col-xs-6 oj-block">
@@ -50,7 +50,7 @@
             </div>
           </li>
           {% endfor %}
-        </ul>
+        </ul>        
 
         {% if post.post.child_count > 11 %}
         <!-- TODO: Pagination for comments -->

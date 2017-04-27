@@ -11,6 +11,7 @@
 
   {% if post %}
   <span class="share_info post">
+    <!--<button class="sort" data-sort="votes">Sort by votes</button>-->
     <!--<a href="https://share.jodel.com/post?postId={{ post.id }}" target="_blank" title="Share via the official Jodel Website"><span>Share</span></a>
     <img class="share" src="{{ url_for('static', filename='images/shares.png') }}" srcset="/static/images/shares@2x.png 2x">-->
     <span class="pins inactive-toggle">{{ post.post.pin_count }}</span><img src="/static/images/pins.png" class="inactive-toggle" />

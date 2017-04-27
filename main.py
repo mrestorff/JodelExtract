@@ -269,7 +269,7 @@ class JodelExtract():
     def _open_post(self, post_id, main=None, channel=None):
         """ Update original post and load comments from API """
 
-        version = "v3_new" # NOTE: CAUTION V3 ACTIVE
+        version = "v2" # NOTE: CAUTION V3 ACTIVE
 
         if version is not "v3_new":
             this_post = post = self.connection.particular_post(post_id)
