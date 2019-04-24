@@ -1,7 +1,7 @@
 # Readme #
 
-JodelExtract is a Flask-based web app for the Jodel API. Curently, it can display posts from the timeline and all channels in a read-only mode. Soon though, it will enable the user to interact with the server as well, meaning the user can vote, write, and pin posts.
-This is **not** an official Jodel app.
+JodelExtract is a Flask-based web app for the [Jodel](https://www.jodel-app.com/) API. Curently, it can display posts from the timeline and all channels in a read-only mode. Soon though, it will enable the user to interact with the server as well, meaning the user can vote, write, and pin posts.
+This is **not** an [official Jodel app](https://www.jodel-app.com/).
 
 ### Prerequisites
 
