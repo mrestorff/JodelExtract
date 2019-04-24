@@ -48,4 +48,4 @@ Debugging:
 
 #### Credits
 
-The HMAC secret decryption and authentication with the server are courtesy of Christian Fibich's project OJOC.
+The HMAC secret decryption and authentication with the server are courtesy of [Christian Fibich's project OJOC](https://bitbucket.org/cfib90/ojoc).
